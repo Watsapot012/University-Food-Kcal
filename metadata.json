@@ -1,0 +1,6 @@
+{
+  "name": "University Food Kcal",
+  "description": "เว็บแอปพลิเคชันคำนวณแคลอรี่ (Kcal) ของอาหารภายในมหาวิทยาลัย รวบรวมข้อมูลร้านอาหาร เมนูอาหาร และข้อมูลโภชนาการสำหรับนักศึกษา",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
