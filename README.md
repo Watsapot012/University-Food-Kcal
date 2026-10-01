@@ -179,6 +179,41 @@ npm run dev
 
 ---
 
+## 🚀 การ Deploy ขึ้น Vercel (Deploying to Vercel)
+
+โปรเจกต์นี้ได้รับการตั้งค่าพร้อมสำหรับการ Deploy บน **Vercel** ทันที (ทั้ง Frontend React SPA และ Backend API ผ่าน Serverless Function):
+
+### สิ่งที่มีการตั้งค่าไว้แล้ว:
+1. **`vercel.json`**: กำหนด build command (`npm run build`), output directory (`dist`), และ routing rewrites (`/api/(.*)` ส่งต่อไปยัง serverless function, เส้นทางอื่นๆ ส่งต่อไปยัง `index.html`)
+2. **`api/index.ts`**: ทำงานเป็น Vercel Serverless Function รองรับ API ทุกเส้นทาง (`/api/restaurants`, `/api/foods`, `/api/stats`, `/api/auth`, `/api/logs`, ฯลฯ)
+3. **In-Memory & `/tmp` Cache**: รองรับ environment ของ Serverless บน Vercel โดยอัตโนมัติ
+
+### วิธีการ Deploy:
+
+#### วิธีที่ 1: ผ่าน Vercel Dashboard (แนะนำที่สุด)
+1. นำโค้ดขึ้น **GitHub**
+2. ไปที่ [vercel.com](https://vercel.com) แล้วกด **"Add New Project"**
+3. เลือก Repository ของโปรเจกต์นี้
+4. Vercel จะตรวจพบการตั้งค่าจาก `vercel.json` โดยอัตโนมัติ:
+   - **Framework Preset:** Vite
+   - **Build Command:** `npm run build`
+   - **Output Directory:** `dist`
+5. กดปุ่ม **"Deploy"** รอประมาณ 1 นาที จะได้ URL เว็บพร้อมใช้งานทันที เช่น `https://your-project.vercel.app`
+
+#### วิธีที่ 2: ผ่าน Vercel CLI
+```bash
+# ติดตั้ง Vercel CLI (หากยังไม่มี)
+npm i -g vercel
+
+# สั่ง deploy
+vercel
+
+# Deploy เป็น Production
+vercel --prod
+```
+
+---
+
 ## 🌟 ฟังก์ชันหลักของระบบ (Key Features)
 
 1. **หน้า Home**:

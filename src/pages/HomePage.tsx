@@ -55,7 +55,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-[1.15]">
             วิเคราะห์โภชนาการอาหาร <br className="hidden sm:inline" />
-            <span className="text-black underline decoration-orange-400 decoration-wavy decoration-2">
+            <span className="text-slate-900">
               ในมหาวิทยาลัย
             </span>
           </h1>
