@@ -11,15 +11,15 @@ interface MealCustomizerPageProps {
 
 const MODIFIER_OPTIONS: ModifierOption[] = [
   // Add-ons
-  { id: 'fried_egg', name: 'ไข่ดาว (Fried Egg)', category: 'add-on', kcal: 90, carbs: 1, pro: 6, fat: 7 },
-  { id: 'extra_meat', name: 'เพิ่มเนื้อสัตว์ (Extra Meat)', category: 'add-on', kcal: 120, carbs: 0, pro: 18, fat: 5 },
-  { id: 'cheese', name: 'ชีสแผ่น (Cheese Slice)', category: 'add-on', kcal: 105, carbs: 1, pro: 7, fat: 9 },
-  { id: 'sausage', name: 'กุนเชียงทอด (Chinese Sausage)', category: 'add-on', kcal: 140, carbs: 8, pro: 5, fat: 11 },
+  { id: 'fried_egg', name: 'ไข่ดาว', category: 'add-on', kcal: 90, carbs: 1, pro: 6, fat: 7 },
+  { id: 'extra_meat', name: 'เพิ่มเนื้อสัตว์พิเศษ', category: 'add-on', kcal: 120, carbs: 0, pro: 18, fat: 5 },
+  { id: 'cheese', name: 'ชีสแผ่น', category: 'add-on', kcal: 105, carbs: 1, pro: 7, fat: 9 },
+  { id: 'sausage', name: 'กุนเชียงทอด', category: 'add-on', kcal: 140, carbs: 8, pro: 5, fat: 11 },
   // Adjustments
-  { id: 'half_rice', name: 'ข้าวครึ่งเดียว (Half Rice)', category: 'adjustment', kcal: -100, carbs: -25, pro: -2, fat: 0 },
-  { id: 'less_oil', name: 'ลดน้ำมัน / ผัดน้ำ (Less Oil)', category: 'adjustment', kcal: -50, carbs: 0, pro: 0, fat: -6 },
-  { id: 'extra_sauce', name: 'เพิ่มน้ำซอส (Extra Sauce)', category: 'adjustment', kcal: 20, carbs: 4, pro: 0, fat: 0 },
-  { id: 'no_skin', name: 'ไม่ใส่หนัง (No Skin)', category: 'adjustment', kcal: -40, carbs: 0, pro: 0, fat: -4.5 },
+  { id: 'half_rice', name: 'ลดข้าวครึ่งเดียว', category: 'adjustment', kcal: -100, carbs: -25, pro: -2, fat: 0 },
+  { id: 'less_oil', name: 'ลดน้ำมัน / ผัดน้ำ', category: 'adjustment', kcal: -50, carbs: 0, pro: 0, fat: -6 },
+  { id: 'extra_sauce', name: 'เพิ่มน้ำซอส', category: 'adjustment', kcal: 20, carbs: 4, pro: 0, fat: 0 },
+  { id: 'no_skin', name: 'ไม่เอาหนังไก่/หมู', category: 'adjustment', kcal: -40, carbs: 0, pro: 0, fat: -4.5 },
 ];
 
 export const MealCustomizerPage: React.FC<MealCustomizerPageProps> = ({

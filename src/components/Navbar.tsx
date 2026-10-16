@@ -48,10 +48,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
           <div className="hidden sm:block">
             <span className="font-extrabold tracking-tight text-sm sm:text-base text-slate-900 block leading-tight">
-              Campus Nutrition Analyzer
+              ระบบโภชนาการอาหารในมหาวิทยาลัย
             </span>
             <span className="text-[10px] text-slate-500 font-semibold tracking-wide">
-              University Food Kcal
+              University Food Kcal • คำนวณแคลอรี่
             </span>
           </div>
         </div>

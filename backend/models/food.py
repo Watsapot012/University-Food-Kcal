@@ -3,9 +3,9 @@ Food model and database access functions.
 Supports nutrition information and filtering.
 """
 try:
-    from backend.models.restaurant import get_db_connection
+    from backend.models.restaurant import get_db_connection, sanitize_data
 except ImportError:
-    from models.restaurant import get_db_connection
+    from models.restaurant import get_db_connection, sanitize_data
 
 class FoodModel:
     @staticmethod
@@ -50,7 +50,7 @@ class FoodModel:
                     query += " ORDER BY f.id ASC"
 
                 cursor.execute(query, params)
-                return cursor.fetchall()
+                return sanitize_data(cursor.fetchall())
         finally:
             conn.close()
 
@@ -66,7 +66,7 @@ class FoodModel:
                     WHERE f.id = %s
                 """
                 cursor.execute(query, (food_id,))
-                return cursor.fetchone()
+                return sanitize_data(cursor.fetchone())
         finally:
             conn.close()
 
@@ -83,7 +83,7 @@ class FoodModel:
                     ORDER BY f.id ASC
                 """
                 cursor.execute(query, (restaurant_id,))
-                return cursor.fetchall()
+                return sanitize_data(cursor.fetchall())
         finally:
             conn.close()
 
@@ -171,12 +171,12 @@ class FoodModel:
                 cursor.execute("SELECT * FROM foods WHERE kcal > 0 ORDER BY kcal ASC LIMIT 1")
                 min_food = cursor.fetchone()
 
-                return {
+                return sanitize_data({
                     "total_restaurants": total_restaurants,
                     "total_foods": foods_summary['total_foods'] if foods_summary else 0,
                     "avg_kcal": round(float(foods_summary['avg_kcal'] or 0), 1) if foods_summary else 0,
                     "max_kcal_food": max_food,
                     "min_kcal_food": min_food
-                }
+                })
         finally:
             conn.close()

@@ -50,7 +50,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         <div className="relative max-w-3xl mx-auto space-y-6">
           <div className="inline-flex items-center gap-2 bg-black text-white px-4 py-1.5 rounded-full text-xs font-semibold shadow-xs">
             <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-            <span>Campus Nutrition Analyzer — University Food Kcal</span>
+            <span>ระบบวิเคราะห์โภชนาการอาหารในมหาวิทยาลัย (University Food Kcal)</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-[1.15]">
@@ -78,7 +78,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               onClick={() => onNavigate('customizer')}
               className="px-6 py-3.5 rounded-full border border-slate-300 bg-white hover:bg-slate-100 text-slate-800 text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all cursor-pointer shadow-xs active:scale-95"
             >
-              <span>ปรับแต่งเมนู (Customizer)</span>
+              <span>ปรับแต่งเมนูอาหาร</span>
             </button>
             <button
               onClick={() => onNavigate('dashboard')}

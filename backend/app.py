@@ -31,7 +31,15 @@ except ImportError:
 
 def create_app():
     app = Flask(__name__)
+    app.config['JSON_AS_ASCII'] = False
+    app.config['JSONIFY_MIMETYPE'] = "application/json; charset=utf-8"
     CORS(app, resources={r"/api/*": {"origins": "*"}})
+
+    @app.after_request
+    def set_utf8_charset(response):
+        if response.mimetype == 'application/json':
+            response.headers['Content-Type'] = 'application/json; charset=utf-8'
+        return response
 
     # Register Blueprints
     app.register_blueprint(restaurant_bp)

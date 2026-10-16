@@ -1,10 +1,26 @@
 """
 Restaurant model and database access functions.
-Supports MySQL database with auto-reconnect and retry.
+Supports MySQL database with auto-reconnect, retry, and UTF-8 encoding support.
 """
 import os
 import time
 import pymysql
+
+def sanitize_data(item):
+    """
+    Auto-correct mojibake (e.g. à¸‚à¹‰à¸²à¸§ -> ข้าว)
+    if database was populated or read with mismatched latin1 charset.
+    """
+    if isinstance(item, dict):
+        return {k: sanitize_data(v) for k, v in item.items()}
+    elif isinstance(item, list):
+        return [sanitize_data(v) for v in item]
+    elif isinstance(item, str) and ('à¸' in item or 'à¹' in item):
+        try:
+            return item.encode('latin1').decode('utf-8')
+        except Exception:
+            return item
+    return item
 
 def get_db_connection(max_retries=10, delay=2):
     host = os.environ.get('MYSQL_HOST', 'localhost')
@@ -22,6 +38,9 @@ def get_db_connection(max_retries=10, delay=2):
                 password=password,
                 database=database,
                 port=port,
+                charset='utf8mb4',
+                use_unicode=True,
+                init_command="SET NAMES utf8mb4",
                 cursorclass=pymysql.cursors.DictCursor,
                 autocommit=True,
                 connect_timeout=5
@@ -40,7 +59,8 @@ class RestaurantModel:
         try:
             with conn.cursor() as cursor:
                 cursor.execute("SELECT * FROM restaurants ORDER BY id ASC")
-                return cursor.fetchall()
+                rows = cursor.fetchall()
+                return sanitize_data(rows)
         finally:
             conn.close()
 
@@ -50,7 +70,8 @@ class RestaurantModel:
         try:
             with conn.cursor() as cursor:
                 cursor.execute("SELECT * FROM restaurants WHERE id = %s", (restaurant_id,))
-                return cursor.fetchone()
+                row = cursor.fetchone()
+                return sanitize_data(row)
         finally:
             conn.close()
 

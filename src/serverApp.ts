@@ -167,6 +167,12 @@ export function saveDb() {
 
 export const apiRouter = Router();
 
+// Ensure UTF-8 charset on all JSON responses
+apiRouter.use((_req: Request, res: Response, next) => {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  next();
+});
+
 // Health check endpoint
 apiRouter.get('/health', (_req: Request, res: Response) => {
   res.json({
