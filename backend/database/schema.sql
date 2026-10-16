@@ -2,11 +2,17 @@
 -- Database Schema for University Food Kcal
 -- ==========================================================
 
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+
 CREATE DATABASE IF NOT EXISTS university_food_kcal 
 CHARACTER SET utf8mb4 
 COLLATE utf8mb4_unicode_ci;
 
 USE university_food_kcal;
+
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
 
 -- 1. Table: restaurants
 DROP TABLE IF EXISTS meal_logs;

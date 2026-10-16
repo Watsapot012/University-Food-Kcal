@@ -299,13 +299,34 @@ def create_app():
     def reset_data():
         return jsonify({"message": "รีเซ็ตข้อมูลเริ่มต้นสำเร็จ"}), 200
 
+    @app.route('/', methods=['GET'])
+    def root():
+        return jsonify({
+            "status": "online",
+            "message": "ระบบ Backend API โภชนาการอาหารในมหาวิทยาลัย (University Food Kcal) พร้อมใช้งาน",
+            "endpoints": {
+                "restaurants": "/api/restaurants",
+                "foods": "/api/foods",
+                "stats": "/api/stats",
+                "health": "/api/health"
+            },
+            "encoding": "UTF-8 (ภาษาไทยสมบูรณ์)"
+        }), 200
+
     @app.errorhandler(404)
     def not_found(error):
-        return jsonify({"error": "Endpoint not found"}), 404
+        return jsonify({
+            "error": "ไม่พบเส้นทาง API ที่เรียก (Endpoint not found)",
+            "message": "กรุณาตรวจสอบ URL ให้ถูกต้อง เช่น /api/restaurants หรือ /api/foods",
+            "status": 404
+        }), 404
 
     @app.errorhandler(500)
     def internal_error(error):
-        return jsonify({"error": "Internal server error"}), 500
+        return jsonify({
+            "error": "เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์ (Internal server error)",
+            "status": 500
+        }), 500
 
     return app
 

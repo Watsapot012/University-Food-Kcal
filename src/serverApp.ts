@@ -177,10 +177,11 @@ apiRouter.use((_req: Request, res: Response, next) => {
 apiRouter.get('/health', (_req: Request, res: Response) => {
   res.json({
     status: 'online',
-    service: 'University Food Kcal API',
-    database: 'persistent',
+    service: 'ระบบ Backend API วิเคราะห์โภชนาการอาหารในมหาวิทยาลัย (University Food Kcal)',
+    database: 'เชื่อมต่อข้อมูลพร้อมใช้งาน (Persistent Storage)',
     version: '1.0.0',
     platform: process.env.VERCEL ? 'vercel-serverless' : 'node-server',
+    charset: 'utf-8',
   });
 });
 
@@ -665,10 +666,8 @@ export function createServerApp() {
     next();
   });
 
-  // Mount under both '/api' and '/' to ensure 100% compatibility across
-  // standalone Express, local dev proxy, and Vercel serverless functions
+  // Mount REST API endpoints under '/api'
   app.use('/api', apiRouter);
-  app.use('/', apiRouter);
 
   return app;
 }

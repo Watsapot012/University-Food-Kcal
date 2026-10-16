@@ -8,18 +8,24 @@ import pymysql
 
 def sanitize_data(item):
     """
-    Auto-correct mojibake (e.g. à¸‚à¹‰à¸²à¸§ -> ข้าว)
-    if database was populated or read with mismatched latin1 charset.
+    Auto-correct mojibake (e.g. à¸‚à¹‰à¸²à¸§ or CP874 corruptions -> ข้าว)
+    if database was populated or read with mismatched latin1 or cp874 charset.
     """
     if isinstance(item, dict):
         return {k: sanitize_data(v) for k, v in item.items()}
     elif isinstance(item, list):
         return [sanitize_data(v) for v in item]
-    elif isinstance(item, str) and ('à¸' in item or 'à¹' in item):
-        try:
-            return item.encode('latin1').decode('utf-8')
-        except Exception:
-            return item
+    elif isinstance(item, str):
+        if 'à¸' in item or 'à¹' in item:
+            try:
+                return item.encode('latin1').decode('utf-8')
+            except Exception:
+                pass
+        if 'เธ' in item or 'เน' in item:
+            try:
+                return item.encode('cp874').decode('utf-8')
+            except Exception:
+                pass
     return item
 
 def get_db_connection(max_retries=10, delay=2):
