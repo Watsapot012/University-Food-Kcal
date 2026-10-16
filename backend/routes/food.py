@@ -1,5 +1,9 @@
 from flask import Blueprint, request, jsonify
-from backend.models.food import FoodModel
+
+try:
+    from backend.models.food import FoodModel
+except ImportError:
+    from models.food import FoodModel
 
 food_bp = Blueprint('food', __name__, url_prefix='/api/foods')
 

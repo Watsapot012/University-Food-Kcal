@@ -1,5 +1,9 @@
 from flask import Blueprint, request, jsonify
-from backend.models.restaurant import RestaurantModel
+
+try:
+    from backend.models.restaurant import RestaurantModel
+except ImportError:
+    from models.restaurant import RestaurantModel
 
 restaurant_bp = Blueprint('restaurant', __name__, url_prefix='/api/restaurants')
 

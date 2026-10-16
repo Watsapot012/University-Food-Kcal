@@ -1,26 +1,37 @@
 """
 Restaurant model and database access functions.
-Supports MySQL database with fallback to SQLite for local development.
+Supports MySQL database with auto-reconnect and retry.
 """
 import os
+import time
 import pymysql
 
-def get_db_connection():
+def get_db_connection(max_retries=10, delay=2):
     host = os.environ.get('MYSQL_HOST', 'localhost')
     user = os.environ.get('MYSQL_USER', 'root')
     password = os.environ.get('MYSQL_PASSWORD', 'rootpassword')
     database = os.environ.get('MYSQL_DB', 'university_food_kcal')
     port = int(os.environ.get('MYSQL_PORT', 3306))
     
-    return pymysql.connect(
-        host=host,
-        user=user,
-        password=password,
-        database=database,
-        port=port,
-        cursorclass=pymysql.cursors.DictCursor,
-        autocommit=True
-    )
+    last_err = None
+    for attempt in range(max_retries):
+        try:
+            return pymysql.connect(
+                host=host,
+                user=user,
+                password=password,
+                database=database,
+                port=port,
+                cursorclass=pymysql.cursors.DictCursor,
+                autocommit=True,
+                connect_timeout=5
+            )
+        except Exception as e:
+            last_err = e
+            if attempt < max_retries - 1:
+                time.sleep(delay)
+            else:
+                raise last_err
 
 class RestaurantModel:
     @staticmethod

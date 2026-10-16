@@ -9,6 +9,9 @@ COLLATE utf8mb4_unicode_ci;
 USE university_food_kcal;
 
 -- 1. Table: restaurants
+DROP TABLE IF EXISTS meal_logs;
+DROP TABLE IF EXISTS profiles;
+DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS foods;
 DROP TABLE IF EXISTS restaurants;
 
@@ -44,6 +47,53 @@ CREATE TABLE foods (
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 3. Table: users
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    avatar VARCHAR(500),
+    role VARCHAR(50) DEFAULT 'student',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 4. Table: profiles
+CREATE TABLE profiles (
+    user_id INT PRIMARY KEY,
+    weight DECIMAL(5,2) DEFAULT 65.0,
+    height DECIMAL(5,2) DEFAULT 175.0,
+    age INT DEFAULT 21,
+    gender VARCHAR(10) DEFAULT 'male',
+    activity DECIMAL(4,3) DEFAULT 1.55,
+    bmr INT DEFAULT 1650,
+    tdee INT DEFAULT 2558,
+    calories INT DEFAULT 2000,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_profiles_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 5. Table: meal_logs
+CREATE TABLE meal_logs (
+    id VARCHAR(100) PRIMARY KEY,
+    user_id INT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    calories INT NOT NULL DEFAULT 0,
+    type VARCHAR(50) DEFAULT 'lunch',
+    timestamp VARCHAR(50),
+    protein DECIMAL(6,1) DEFAULT 0.0,
+    carbs DECIMAL(6,1) DEFAULT 0.0,
+    fat DECIMAL(6,1) DEFAULT 0.0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_meal_logs_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- ==========================================================
 -- Seed Data: Sample University Canteens & Restaurants
 -- ==========================================================
@@ -56,7 +106,7 @@ INSERT INTO restaurants (id, name, description, location, image, phone, open_hou
 (5, 'ซุ้มเครื่องดื่ม & ขนมหวาน UniChill', 'ชาไทย ชาเขียว กาแฟสด น้ำผลไม้ปั่น และเครื่องดื่มสุขภาพหวานน้อย', 'ลานกิจกรรมหน้าหอสมุดกลาง', 'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=800&q=80', '085-678-9012', '07:00 - 18:30 น.');
 
 -- ==========================================================
--- Seed Data: Sample Foods (> 10 items)
+-- Seed Data: Sample Foods
 -- ==========================================================
 
 INSERT INTO foods (id, name, restaurant_id, price, kcal, protein, carbohydrate, fat, image, description, category, is_popular) VALUES
@@ -77,3 +127,17 @@ INSERT INTO foods (id, name, restaurant_id, price, kcal, protein, carbohydrate, 
 (15, 'ชาไทยเย็นหวานน้อย (25%)', 5, 30.00, 160, 3.0, 24.0, 6.0, 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80', 'ชาไทยแท้ชงสด ชาหอมเข้มข้น ผสมนมสดหวานน้อย สดชื่นระหว่างเรียน', 'เครื่องดื่ม', TRUE),
 (16, 'ชาเขียวมัทฉะนมสดเย็น', 5, 35.00, 140, 4.0, 20.0, 5.0, 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&w=800&q=80', 'มัทฉะแท้เกรดพรีเมียมตีกับนมสดพร่องมันเนย หอมมัน กลมกล่อม', 'เครื่องดื่ม', FALSE),
 (17, 'น้ำดื่มบริสุทธิ์ตรามหาวิทยาลัย (600 ml)', 5, 10.00, 0, 0.0, 0.0, 0.0, 'https://images.unsplash.com/photo-1548839140-29a749e1bc4e?auto=format&fit=crop&w=800&q=80', 'น้ำดื่มสะอาดผ่านระบบกรอง RO ปราศจากแคลอรี่ คืนความสดชื่น 100%', 'เครื่องดื่ม', FALSE);
+
+-- ==========================================================
+-- Seed Data: Sample User & Profile
+-- ==========================================================
+
+INSERT INTO users (id, name, email, password_hash, avatar, role) VALUES
+(1, 'นักศึกษาสุขภาพดี', 'student@npru.ac.th', 'password123', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80', 'student');
+
+INSERT INTO profiles (user_id, weight, height, age, gender, activity, bmr, tdee, calories) VALUES
+(1, 65.0, 175.0, 21, 'male', 1.55, 1650, 2558, 2000);
+
+INSERT INTO meal_logs (id, user_id, name, calories, type, timestamp, protein, carbs, fat) VALUES
+('log-1', 1, 'ข้าวกะเพราไก่ + ไข่ดาว', 590, 'lunch', '12:30 น.', 28.0, 55.0, 26.0),
+('log-2', 1, 'ชาไทยเย็นหวานน้อย (25%)', 160, 'snack', '14:15 น.', 3.0, 24.0, 6.0);

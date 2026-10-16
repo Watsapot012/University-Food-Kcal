@@ -2,7 +2,10 @@
 Food model and database access functions.
 Supports nutrition information and filtering.
 """
-from backend.models.restaurant import get_db_connection
+try:
+    from backend.models.restaurant import get_db_connection
+except ImportError:
+    from models.restaurant import get_db_connection
 
 class FoodModel:
     @staticmethod
