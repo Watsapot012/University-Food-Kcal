@@ -179,7 +179,45 @@ npm run dev
 
 ---
 
-## 🚀 การ Deploy ขึ้น Vercel (Deploying to Vercel)
+## 🧪 การรันชุดทดสอบระบบ (Running Tests)
+
+โปรเจกต์มีไฟล์สำหรับรัน Test ครบทั้งระบบ **Node.js/Express API** และ **Python Backend** ครอบคลุมการทดสอบ API, การตรวจสอบความถูกต้องของภาษาไทย (UTF-8), การคำนวณแคลอรี่และสารอาหาร:
+
+### 1. วิธีรันแบบรวมทุกระบบ (แนะนำ)
+- **บน Windows:** ดับเบิ้ลคลิกไฟล์ `run_test.bat` หรือพิมพ์:
+  ```cmd
+  run_test.bat
+  ```
+- **บน macOS / Linux / Git Bash:**
+  ```bash
+  ./run_test.sh
+  ```
+
+### 2. วิธีรันเฉพาะ Node.js / Express API Tests
+```bash
+npm test
+```
+หรือรันตรงผ่าน tsx:
+```bash
+npx tsx tests/run_tests.ts
+```
+
+### 3. วิธีรันเฉพาะ Python Backend Tests
+```bash
+# รันผ่าน Test Runner ของระบบ
+python backend/run_tests.py
+
+# หรือรันผ่าน standard unittest
+python -m unittest backend/test_app.py
+```
+
+### รายการการทดสอบที่ครอบคลุม:
+1. **API Endpoints:** ตรวจสอบ `/api/health`, `/api/restaurants`, `/api/foods`, `/api/stats`
+2. **Thai UTF-8 & Mojibake Check:** ตรวจสอบรหัส Unicode ภาษาไทย การเข้ารหัส UTF-8 และการแก้ตัวอักษรเพี้ยน
+3. **Nutrition Calculations:** ตรวจสอบสูตรคำนวณพลังงาน (Protein×4 + Carbs×4 + Fat×9) และสูตร BMR / TDEE (Mifflin-St Jeor)
+4. **Search & Filtering:** ตรวจสอบการค้นหาชื่ออาหารและการกรองตามช่วง Kcal
+
+---
 
 โปรเจกต์นี้ได้รับการตั้งค่าพร้อมสำหรับการ Deploy บน **Vercel** ทันที (ทั้ง Frontend React SPA และ Backend API ผ่าน Serverless Function):
 
