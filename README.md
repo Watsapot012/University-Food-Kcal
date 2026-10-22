@@ -42,10 +42,25 @@ university-food-kcal/
 │   ├── main.tsx                   # React DOM render entry point
 │   └── index.css                  # Global Tailwind CSS
 │
+├── tests/
+│   ├── test_01_TC_HOME_01_ค้นหาด่วน.py       # TC-HOME-01 ค้นหาด่วนหน้าแรก
+│   ├── test_02_TC_HOME_02_ตัวชี้วัดสรุป.py     # TC-HOME-02 ตัวชี้วัดสรุป Quick Stats
+│   ├── test_03_TC_REST_01_แสดงร้านค้า.py      # TC-REST-01 รายชื่อร้านค้าในมหาวิทยาลัย
+│   ├── test_04_TC_REST_02_กรองเมนูตามร้าน.py   # TC-REST-02 กรองเมนูอาหารตามร้านค้า
+│   ├── test_05_TC_FOOD_01_ค้นหาเมนูอาหาร.py   # TC-FOOD-01 ค้นหาชื่ออาหารตามคีย์เวิร์ด
+│   ├── test_06_TC_FOOD_02_กรองช่วงแคลอรี่.py   # TC-FOOD-02 กรองอาหารตามช่วง Kcal
+│   ├── test_07_TC_CUST_02_ปรับแต่งเพิ่มไข่ดาว.py # TC-CUST-02 ปรับแต่งเมนู Real-time
+│   ├── test_08_TC_DASH_02_บันทึกมื้ออาหาร.py   # TC-DASH-02 บันทึกมื้ออาหารลงไดอารี่
+│   ├── test_09_TC_PROF_01_คำนวณBMR_TDEE.py   # TC-PROF-01 คำนวณ BMR & TDEE (Mifflin)
+│   ├── test_10_TC_AUTH_01_เข้าสู่ระบบ.py      # TC-AUTH-01 เข้าสู่ระบบและออก Token
+│   ├── test_portal_10_cases.py               # รันรวม 10 Test Cases ต่อเนื่อง 100%
+│   └── run_tests.ts                          # Node.js Express API Automated Tests
+│
 ├── server.ts                      # Full-stack server (Express + Vite + REST API & persistence)
 ├── nginx.conf                     # Nginx proxy configuration for Docker container
 ├── Dockerfile                     # Multi-stage Dockerfile for React frontend
 ├── docker-compose.yml             # Docker Compose orchestration (MySQL + Flask + React)
+├── TEST_CASES.md                  # Test Cases Matrix Specification (32 Cases)
 ├── metadata.json                  # Application metadata
 ├── package.json                   # Node.js dependencies and scripts
 └── README.md                      # Complete project documentation
@@ -181,9 +196,9 @@ npm run dev
 
 ## 🧪 การรันชุดทดสอบระบบ (Running Tests)
 
-โปรเจกต์มีไฟล์สำหรับรัน Test ครบทั้งระบบ **Node.js/Express API** และ **Python Backend** ครอบคลุมการทดสอบ API, การตรวจสอบความถูกต้องของภาษาไทย (UTF-8), การคำนวณแคลอรี่และสารอาหาร:
+โปรเจกต์มีชุดทดสอบครอบคลุมทั้ง **10 Test Cases เฉพาะเว็บไซต์ของเรา** (ในโฟลเดอร์ `tests/`), **Node.js/Express API Tests**, และ **Python Health Tests**:
 
-### 1. วิธีรันแบบรวมทุกระบบ (แนะนำ)
+### 1. วิธีรันแบบรวมทุกระบบ (คลิกเดียว)
 - **บน Windows:** ดับเบิ้ลคลิกไฟล์ `run_test.bat` หรือพิมพ์:
   ```cmd
   run_test.bat
@@ -193,29 +208,48 @@ npm run dev
   ./run_test.sh
   ```
 
-### 2. วิธีรันเฉพาะ Node.js / Express API Tests
+### 2. วิธีรันชุดทดสอบ 10 Test Cases เฉพาะเว็บเรา (Python)
+รันแบบรวมทั้ง 10 เคสต่อเนื่อง:
+```bash
+python tests/test_portal_10_cases.py
+# หรือ
+npm run test:suite
+```
+
+หรือเลือกรันดูโค้ดและทดสอบแยกทีละไฟล์:
+```bash
+python tests/test_01_TC_HOME_01_ค้นหาด่วน.py
+python tests/test_02_TC_HOME_02_ตัวชี้วัดสรุป.py
+python tests/test_03_TC_REST_01_แสดงร้านค้า.py
+python tests/test_04_TC_REST_02_กรองเมนูตามร้าน.py
+python tests/test_05_TC_FOOD_01_ค้นหาเมนูอาหาร.py
+python tests/test_06_TC_FOOD_02_กรองช่วงแคลอรี่.py
+python tests/test_07_TC_CUST_02_ปรับแต่งเพิ่มไข่ดาว.py
+python tests/test_08_TC_DASH_02_บันทึกมื้ออาหาร.py
+python tests/test_09_TC_PROF_01_คำนวณBMR_TDEE.py
+python tests/test_10_TC_AUTH_01_เข้าสู่ระบบ.py
+```
+
+### 3. วิธีรันเฉพาะ Node.js / Express API Tests
 ```bash
 npm test
-```
-หรือรันตรงผ่าน tsx:
-```bash
+# หรือรันตรงผ่าน tsx:
 npx tsx tests/run_tests.ts
 ```
 
-### 3. วิธีรันเฉพาะ Python Backend Tests
-```bash
-# รันผ่าน Test Runner ของระบบ
-python backend/run_tests.py
-
-# หรือรันผ่าน standard unittest
-python -m unittest backend/test_app.py
-```
-
-### รายการการทดสอบที่ครอบคลุม:
-1. **API Endpoints:** ตรวจสอบ `/api/health`, `/api/restaurants`, `/api/foods`, `/api/stats`
-2. **Thai UTF-8 & Mojibake Check:** ตรวจสอบรหัส Unicode ภาษาไทย การเข้ารหัส UTF-8 และการแก้ตัวอักษรเพี้ยน
-3. **Nutrition Calculations:** ตรวจสอบสูตรคำนวณพลังงาน (Protein×4 + Carbs×4 + Fat×9) และสูตร BMR / TDEE (Mifflin-St Jeor)
-4. **Search & Filtering:** ตรวจสอบการค้นหาชื่ออาหารและการกรองตามช่วง Kcal
+### 📋 ตาราง 10 Test Cases เฉพาะเว็บเรา (Summary Matrix)
+| รหัสทดสอบ | ไฟล์ใน `tests/` | หน้าจอ | กรณีทดสอบ (Scenario) | ผลลัพธ์ที่คาดหวัง |
+|---|---|---|---|---|
+| **TC-HOME-01** | `test_01_TC_HOME_01_ค้นหาด่วน.py` | หน้าแรก | ค้นหาด่วน พิมพ์ "กะเพรา" | สลับไปหน้ารายการอาหาร แสดงเฉพาะเมนูกะเพรา |
+| **TC-HOME-02** | `test_02_TC_HOME_02_ตัวชี้วัดสรุป.py` | หน้าแรก | ตัวชี้วัดสรุป โหลดหน้าแรก | แสดงการ์ดจำนวนร้าน, จำนวนเมนู, ค่าเฉลี่ย kcal ถูกต้อง |
+| **TC-REST-01** | `test_03_TC_REST_01_แสดงร้านค้า.py` | ร้านค้า | แสดงรายชื่อร้าน เข้าแท็บร้านค้า | แสดงรายชื่อร้านค้าในมหาวิทยาลัยครบถ้วน พร้อมเวลาเปิด-ปิด |
+| **TC-REST-02** | `test_04_TC_REST_02_กรองเมนูตามร้าน.py` | ร้านค้า | กรองเมนูตามร้าน เลือกร้านป้าสมใจ | แสดงเฉพาะเมนูอาหารของร้านป้าสมใจเท่านั้น |
+| **TC-FOOD-01** | `test_05_TC_FOOD_01_ค้นหาเมนูอาหาร.py` | รายการอาหาร | ค้นหาชื่ออาหาร พิมพ์ "ต้มยำ" | กรองเหลือเฉพาะเมนูก๋วยเตี๋ยวต้มยำหมูน้ำใส |
+| **TC-FOOD-02** | `test_06_TC_FOOD_02_กรองช่วงแคลอรี่.py` | รายการอาหาร | กรองช่วง Kcal Min: 200, Max: 450 | แสดงเฉพาะอาหารที่แคลอรี่อยู่ในช่วง 200–450 kcal |
+| **TC-CUST-02** | `test_07_TC_CUST_02_ปรับแต่งเพิ่มไข่ดาว.py` | ปรับแต่งอาหาร | ท็อปปิ้งไข่ดาว ติ๊กเลือก "+ไข่ดาว (+90 kcal)" | แคลอรี่คำนวณใหม่เป็น 640 kcal ทันทีแบบ Real-time |
+| **TC-DASH-02** | `test_08_TC_DASH_02_บันทึกมื้ออาหาร.py` | ไดอารี่ | บันทึกมื้ออาหาร เพิ่มกะเพราไก่ 640 kcal มื้อกลางวัน | แคลอรี่สะสมเพิ่มขึ้น และมีรายการใหม่ในตารางไดอารี่ |
+| **TC-PROF-01** | `test_09_TC_PROF_01_คำนวณBMR_TDEE.py` | โปรไฟล์ | คำนวณ BMR & TDEE ชาย นน.65, สส.175, อายุ 21 | BMR = 1,644 kcal และ TDEE = 2,548 kcal (Mifflin-St Jeor) |
+| **TC-AUTH-01** | `test_10_TC_AUTH_01_เข้าสู่ระบบ.py` | เข้าสู่ระบบ | Login สำเร็จ student@npru.ac.th / รหัสถูกต้อง | เข้าสู่ระบบสำเร็จ ได้รับ Token และแสดงชื่อผู้ใช้ที่ Navbar |
 
 ---
 
