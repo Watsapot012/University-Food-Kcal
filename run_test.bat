@@ -25,8 +25,8 @@ if %ERRORLEVEL% NEQ 0 (
 echo.
 echo ------------------------------------------------------
 echo [2/2] เริ่มต้นการทดสอบ Python Function Test Suite (เเบ่งตามหัวข้อ)...
-if exist test_cases_suite.py (
-    python test_cases_suite.py
+if exist tests\test_portal_10_cases.py (
+    python tests\test_portal_10_cases.py
 ) else if exist backend\run_tests.py (
     python backend\run_tests.py
 ) else (

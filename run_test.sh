@@ -20,8 +20,8 @@ npm test
 echo ""
 echo "------------------------------------------------------"
 echo "[2/2] เริ่มต้นการทดสอบ Python Function Test Suite (เเบ่งตามหัวข้อ)..."
-if [ -f "test_cases_suite.py" ]; then
-    python3 test_cases_suite.py || python test_cases_suite.py
+if [ -f "tests/test_portal_10_cases.py" ]; then
+    python3 tests/test_portal_10_cases.py || python tests/test_portal_10_cases.py
 elif [ -f "backend/run_tests.py" ]; then
     python3 backend/run_tests.py || python backend/run_tests.py
 fi

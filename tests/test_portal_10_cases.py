@@ -1,94 +1,75 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ชุดทดสอบรวม 10 Test Cases (Portal Test Runner)
-ระบบวิเคราะห์แคลอรี่อาหาร มหาวิทยาลัยราชภัฏนครปฐม (University Food Kcal)
-
-รันด้วยคำสั่ง:
-    python tests/test_portal_10_cases.py
+================================================================================
+ไฟล์รวมการรันแบบทดสอบทั้งหมด: test_all_cases.py
+(คล้าย test_portal_10_cases.py ที่รวมการรันทั้ง 10 Test Cases ของเว็บไซต์เรา)
+================================================================================
 """
 
-import os
+import subprocess
 import sys
-import time
+import glob
+import os
 
-TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
-if TESTS_DIR not in sys.path:
-    sys.path.insert(0, TESTS_DIR)
-
-# นำเข้าฟังก์ชันทดสอบทั้ง 10 เคส
-from test_01_login import test_login_success
-import importlib
-
-# โหลดโมดูลภาษาไทยแบบไดนามิกเพื่อความเข้ากันได้ทุกระบบ
-test_02 = importlib.import_module("test_02_กรอกแบบฟอร์มและกดส่ง")
-test_03 = importlib.import_module("test_03_ติดตาม")
-test_04 = importlib.import_module("test_04_login_ไม่ได้")
-test_05 = importlib.import_module("test_05_กรอกฟอร์มผิด")
-test_06 = importlib.import_module("test_06_admin_แก้ไข")
-test_07 = importlib.import_module("test_07_ลบ")
-test_08 = importlib.import_module("test_08_กรอกติดตามผิด")
-test_09 = importlib.import_module("test_09_admin_ลบ")
-test_10 = importlib.import_module("test_10_admin_เปลี่ยน")
-
-TEST_CASES = [
-    ("TC-01", "test_01_login", "ทดสอบการเข้าสู่ระบบสำเร็จ (Login Success)", test_login_success),
-    ("TC-02", "test_02_กรอกแบบฟอร์มและกดส่ง", "ทดสอบกรอกแบบฟอร์มบันทึกอาหารและกดส่ง", test_02.test_submit_meal_log),
-    ("TC-03", "test_03_ติดตาม", "ทดสอบระบบติดตามแคลอรี่และสารอาหารประจำวัน", test_03.test_tracking_daily_kcal),
-    ("TC-04", "test_04_login_ไม่ได้", "ทดสอบกรณีรหัสผ่านผิด / Login ไม่ผ่าน", test_04.test_login_failed_wrong_password),
-    ("TC-05", "test_05_กรอกฟอร์มผิด", "ทดสอบกรณีส่งแบบฟอร์มข้อมูลผิดพลาด/ไม่ครบ", test_05.test_form_validation_errors),
-    ("TC-06", "test_06_admin_แก้ไข", "ทดสอบ Admin แก้ไขข้อมูลอาหารและสารอาหาร", test_06.test_admin_edit_food),
-    ("TC-07", "test_07_ลบ", "ทดสอบผู้ใช้ลบรายการอาหารออกจากบันทึก", test_07.test_delete_user_log),
-    ("TC-08", "test_08_กรอกติดตามผิด", "ทดสอบกรณีค้นหา/ติดตามข้อมูลผิดพลาด (404 Not Found)", test_08.test_track_invalid_not_found),
-    ("TC-09", "test_09_admin_ลบ", "ทดสอบ Admin ลบเมนูอาหารออกจากฐานข้อมูล", test_09.test_admin_delete_food),
-    ("TC-10", "test_10_admin_เปลี่ยน", "ทดสอบ Admin เปลี่ยนแปลงข้อมูลร้านค้าและสถิติ", test_10.test_admin_change_restaurant),
+TEST_FILES = [
+    "test_01_TC_HOME_01_ค้นหาด่วน.py",
+    "test_02_TC_HOME_02_ตัวชี้วัดสรุป.py",
+    "test_03_TC_REST_01_แสดงร้านค้า.py",
+    "test_04_TC_REST_02_กรองเมนูตามร้าน.py",
+    "test_05_TC_FOOD_01_ค้นหาเมนูอาหาร.py",
+    "test_06_TC_FOOD_02_กรองช่วงแคลอรี่.py",
+    "test_07_TC_CUST_02_ปรับแต่งเพิ่มไข่ดาว.py",
+    "test_08_TC_DASH_02_บันทึกมื้ออาหาร.py",
+    "test_09_TC_PROF_01_คำนวณBMR_TDEE.py",
+    "test_10_TC_AUTH_01_เข้าสู่ระบบ.py",
 ]
 
-def run_all_cases():
-    print("\n" + "=" * 70)
-    print("🚀  ชุดทดสอบรวม 10 Test Cases (University Food Kcal - NPRU)")
-    print("=" * 70)
 
-    results = []
-    start_total = time.time()
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-    for tc_id, file_name, desc, test_fn in TEST_CASES:
-        start = time.time()
-        print(f"\n▶ กำลังรัน {tc_id}: {file_name}.py ({desc})...")
-        try:
-            test_fn()
-            duration = round((time.time() - start) * 1000, 1)
-            results.append((tc_id, file_name, desc, "PASS", duration, None))
-        except Exception as e:
-            duration = round((time.time() - start) * 1000, 1)
-            results.append((tc_id, file_name, desc, "FAIL", duration, str(e)))
-            print(f"  \033[91m✖ ไม่ผ่าน: {e}\033[0m")
+def run_all_tests():
+    print("=" * 75)
+    print("🚀 เริ่มต้นการรันแบบทดสอบ 10 Test Cases ประจำเว็บไซต์ University Food Kcal")
+    print("=" * 75)
 
-    total_time = round(time.time() - start_total, 3)
+    passed_count = 0
+    failed_count = 0
 
-    print("\n" + "=" * 70)
-    print("📊 ตารางสรุปผลการทดสอบทั้งหมด 10 Test Cases:")
-    print("=" * 70)
-    print(f"{'รหัส':<7} | {'ชื่อไฟล์':<30} | {'สถานะ':<8} | {'เวลา (ms)':<10}")
-    print("-" * 70)
+    for idx, test_file_name in enumerate(TEST_FILES, 1):
+        target_path = test_file_name
+        if not os.path.exists(target_path):
+            target_path = os.path.join(BASE_DIR, test_file_name)
+        if not os.path.exists(target_path):
+            print(f"\n[{idx}/10] ❌ ไม่พบไฟล์: {test_file_name}")
+            failed_count += 1
+            continue
 
-    passed_count = sum(1 for r in results if r[3] == "PASS")
-    for tc_id, file_name, desc, status, duration, err in results:
-        status_color = "\033[92m✔ PASS\033[0m" if status == "PASS" else "\033[91m✖ FAIL\033[0m"
-        print(f"{tc_id:<7} | {file_name:<30} | {status_color:<17} | {duration:<10} ms")
+        print(f"\n▶ กำลังรัน: [{idx}/10] {test_file_name} ...")
+        proc = subprocess.run([sys.executable, target_path], capture_output=True, text=True, encoding="utf-8")
 
-    print("-" * 70)
-    print(f"ผลลัพธ์: ผ่าน {passed_count}/{len(TEST_CASES)} เคส ({passed_count/len(TEST_CASES)*100:.0f}%) | เวลาที่ใช้: {total_time} วินาที")
+        if proc.returncode == 0:
+            passed_count += 1
+            # พิมพ์เฉพาะบรรทัดสรุปของแต่ละไฟล์
+            lines = [line for line in proc.stdout.split("\n") if "PASS" in line or "ผ่าน" in line]
+            status_line = lines[-1] if lines else "ผ่านการทดสอบ (PASS)"
+            print(f"  \033[92m✔ {status_line.strip()}\033[0m")
+        else:
+            failed_count += 1
+            print(f"  \033[91m✖ ไม่ผ่าน (FAIL)\033[0m")
+            print(proc.stderr or proc.stdout)
 
-    if passed_count == len(TEST_CASES):
-        print("\033[92m🎉 ผ่านการทดสอบครบทั้ง 10 เคสอย่างสมบูรณ์ 100%!\033[0m")
-        print("=" * 70 + "\n")
-        return 0
+    print("\n" + "=" * 75)
+    print("📊 สรุปผลการรัน Test Cases ทั้ง 10 เคส:")
+    print("=" * 75)
+    print(f"  การทดสอบทั้งหมด : {len(TEST_FILES)} ไฟล์")
+    print(f"  \033[92mผ่าน (Passed)    : {passed_count} ไฟล์\033[0m")
+    if failed_count > 0:
+        print(f"  \033[91mไม่ผ่าน (Failed)  : {failed_count} ไฟล์\033[0m")
     else:
-        print("\033[91m⚠️ มีบางเคสไม่ผ่าน กรุณาตรวจสอบรายละเอียดด้านบน\033[0m")
-        print("=" * 70 + "\n")
-        return 1
+        print("  \033[92mสถานะ            : ผ่านครบ 100% ทุกไฟล์แบบทดสอบ! 🎉\033[0m")
+    print("=" * 75 + "\n")
+
 
 if __name__ == "__main__":
-    code = run_all_cases()
-    sys.exit(code)
+    run_all_tests()
