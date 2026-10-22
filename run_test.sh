@@ -19,11 +19,11 @@ npm test
 
 echo ""
 echo "------------------------------------------------------"
-echo "[2/2] เริ่มต้นการทดสอบ Python Backend Tests..."
-if [ -f "backend/run_tests.py" ]; then
+echo "[2/2] เริ่มต้นการทดสอบ Python Function Test Suite (เเบ่งตามหัวข้อ)..."
+if [ -f "test_cases_suite.py" ]; then
+    python3 test_cases_suite.py || python test_cases_suite.py
+elif [ -f "backend/run_tests.py" ]; then
     python3 backend/run_tests.py || python backend/run_tests.py
-elif [ -f "run_tests.py" ]; then
-    python3 run_tests.py || python run_tests.py
 fi
 
 echo ""

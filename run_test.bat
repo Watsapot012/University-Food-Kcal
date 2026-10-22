@@ -24,13 +24,13 @@ if %ERRORLEVEL% NEQ 0 (
 :python_test
 echo.
 echo ------------------------------------------------------
-echo [2/2] เริ่มต้นการทดสอบ Python Backend Tests...
-if exist backend\run_tests.py (
+echo [2/2] เริ่มต้นการทดสอบ Python Function Test Suite (เเบ่งตามหัวข้อ)...
+if exist test_cases_suite.py (
+    python test_cases_suite.py
+) else if exist backend\run_tests.py (
     python backend\run_tests.py
-) else if exist run_tests.py (
-    python run_tests.py
 ) else (
-    echo ไม่พบไฟล์ run_tests.py สำหรับ Python
+    echo ไม่พบไฟล์ทดสอบสำหรับ Python
 )
 
 echo.

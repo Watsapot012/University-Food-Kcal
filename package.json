@@ -11,7 +11,8 @@
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
     "test": "tsx tests/run_tests.ts",
-    "test:py": "python3 backend/run_tests.py || python backend/run_tests.py"
+    "test:py": "python3 backend/run_tests.py || python backend/run_tests.py",
+    "test:suite": "python3 test_cases_suite.py || python test_cases_suite.py"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
