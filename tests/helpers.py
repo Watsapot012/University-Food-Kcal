@@ -13,12 +13,88 @@ import os
 import sys
 import time
 import json
+import atexit
+import shutil
+import socket
+import subprocess
 import urllib.request
 import urllib.error
 from typing import List, Dict, Any, Optional
 
+for stream in (sys.stdout, sys.stderr):
+    if hasattr(stream, "reconfigure"):
+        stream.reconfigure(encoding="utf-8")
+
 APP_URL = os.environ.get("APP_URL", "http://localhost:3000")
-API_URL = os.environ.get("API_URL", "http://localhost:3000/api")
+API_URL = os.environ.get("API_URL", f"{APP_URL.rstrip('/')}/api")
+_LOCAL_SERVER: Optional[subprocess.Popen] = None
+_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def ensure_local_app():
+    """Start this checkout when no external APP_URL was explicitly configured."""
+    global APP_URL, API_URL, _LOCAL_SERVER
+
+    if os.environ.get("APP_URL"):
+        return
+
+    node = shutil.which("node")
+    server_entry = os.path.join(_PROJECT_ROOT, "node_modules", "tsx", "dist", "cli.mjs")
+    if not node or not os.path.isfile(server_entry):
+        raise RuntimeError(
+            "Cannot start the test app. Install project dependencies with `npm ci`, "
+            "or set APP_URL to a running app."
+        )
+
+    with socket.socket() as sock:
+        sock.bind(("127.0.0.1", 0))
+        port = sock.getsockname()[1]
+
+    APP_URL = f"http://127.0.0.1:{port}"
+    API_URL = f"{APP_URL}/api"
+    os.environ["APP_URL"] = APP_URL
+    os.environ["API_URL"] = API_URL
+
+    server_env = os.environ.copy()
+    server_env["PORT"] = str(port)
+    _LOCAL_SERVER = subprocess.Popen(
+        [node, server_entry, "server.ts"],
+        cwd=_PROJECT_ROOT,
+        env=server_env,
+    )
+    atexit.register(stop_local_app)
+
+    deadline = time.monotonic() + 30
+    health_url = f"{API_URL}/health"
+    while time.monotonic() < deadline:
+        if _LOCAL_SERVER.poll() is not None:
+            raise RuntimeError(
+                f"Local test app exited during startup with code {_LOCAL_SERVER.returncode}."
+            )
+        try:
+            with urllib.request.urlopen(health_url, timeout=1) as response:
+                health = json.loads(response.read().decode("utf-8"))
+            if health.get("status") == "online":
+                return
+        except (urllib.error.URLError, TimeoutError, json.JSONDecodeError):
+            time.sleep(0.25)
+
+    stop_local_app()
+    raise RuntimeError(f"Local test app did not become healthy at {health_url}.")
+
+
+def stop_local_app():
+    global _LOCAL_SERVER
+
+    if _LOCAL_SERVER is None or _LOCAL_SERVER.poll() is not None:
+        return
+    _LOCAL_SERVER.terminate()
+    try:
+        _LOCAL_SERVER.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        _LOCAL_SERVER.kill()
+        _LOCAL_SERVER.wait()
+    _LOCAL_SERVER = None
 
 # ตรวจสอบการ import selenium แบบมาตรฐาน
 SELENIUM_AVAILABLE = False
@@ -254,6 +330,8 @@ def get_driver(headless: Optional[bool] = None):
     - หากมี selenium และ Google Chrome ติดตั้งอยู่ จะเปิดเบราว์เซอร์จริง
     - หากรันบน Server ที่ไม่มี GUI / Chrome จะทำงานผ่าน compatibility driver โดยยิง HTTP ไปยังเว็บไซต์จริง
     """
+    ensure_local_app()
+
     # ตรวจสอบว่าผู้ใช้ต้องการเปิดหน้าต่างเบราว์เซอร์จริงหรือไม่
     if headless is None:
         if "--browser" in sys.argv or "--headed" in sys.argv or "--gui" in sys.argv:
@@ -297,3 +375,5 @@ def get_driver(headless: Optional[bool] = None):
 
     return MockWebDriver(APP_URL)
 
+
+ensure_local_app()

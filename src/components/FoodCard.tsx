@@ -14,8 +14,11 @@ export const FoodCard: React.FC<FoodCardProps> = ({
   return (
     <div
       id={`food-card-${food.id}`}
+      data-testid="food-card"
+      data-id={food.id}
+      data-kcal={food.kcal}
       onClick={() => onSelectFood(food)}
-      className="group bg-white rounded-xl border border-slate-200 hover:border-black/20 hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col cursor-pointer"
+      className="food-card group bg-white rounded-xl border border-slate-200 hover:border-black/20 hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col cursor-pointer"
     >
       {/* Food Image Container */}
       <div className="relative w-full h-48 bg-slate-100 overflow-hidden">

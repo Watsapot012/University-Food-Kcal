@@ -12,6 +12,8 @@ import sys
 import glob
 import os
 
+from helpers import stop_local_app
+
 TEST_FILES = [
     "test_01_TC_HOME_01_ค้นหาด่วน.py",
     "test_02_TC_HOME_02_ตัวชี้วัดสรุป.py",
@@ -28,48 +30,60 @@ TEST_FILES = [
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# Keep Thai and emoji output readable in Windows consoles using legacy encodings.
+for stream in (sys.stdout, sys.stderr):
+    if hasattr(stream, "reconfigure"):
+        stream.reconfigure(encoding="utf-8")
+
 def run_all_tests():
-    print("=" * 75)
-    print("🚀 เริ่มต้นการรันแบบทดสอบ 10 Test Cases ประจำเว็บไซต์ University Food Kcal")
-    print("=" * 75)
+    try:
+        print("=" * 75)
+        print("🚀 เริ่มต้นการรันแบบทดสอบ 10 Test Cases ประจำเว็บไซต์ University Food Kcal")
+        print("=" * 75)
 
-    passed_count = 0
-    failed_count = 0
+        passed_count = 0
+        failed_count = 0
 
-    for idx, test_file_name in enumerate(TEST_FILES, 1):
-        target_path = test_file_name
-        if not os.path.exists(target_path):
-            target_path = os.path.join(BASE_DIR, test_file_name)
-        if not os.path.exists(target_path):
-            print(f"\n[{idx}/10] ❌ ไม่พบไฟล์: {test_file_name}")
-            failed_count += 1
-            continue
+        for idx, test_file_name in enumerate(TEST_FILES, 1):
+            target_path = test_file_name
+            if not os.path.exists(target_path):
+                target_path = os.path.join(BASE_DIR, test_file_name)
+            if not os.path.exists(target_path):
+                print(f"\n[{idx}/10] ❌ ไม่พบไฟล์: {test_file_name}")
+                failed_count += 1
+                continue
 
-        print(f"\n▶ กำลังรัน: [{idx}/10] {test_file_name} ...")
-        proc = subprocess.run([sys.executable, target_path], capture_output=True, text=True, encoding="utf-8")
+            print(f"\n▶ กำลังรัน: [{idx}/10] {test_file_name} ...")
+            proc = subprocess.run(
+                [sys.executable, target_path],
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+            )
 
-        if proc.returncode == 0:
-            passed_count += 1
-            # พิมพ์เฉพาะบรรทัดสรุปของแต่ละไฟล์
-            lines = [line for line in proc.stdout.split("\n") if "PASS" in line or "ผ่าน" in line]
-            status_line = lines[-1] if lines else "ผ่านการทดสอบ (PASS)"
-            print(f"  \033[92m✔ {status_line.strip()}\033[0m")
+            if proc.returncode == 0:
+                passed_count += 1
+                lines = [line for line in proc.stdout.split("\n") if "PASS" in line or "ผ่าน" in line]
+                status_line = lines[-1] if lines else "ผ่านการทดสอบ (PASS)"
+                print(f"  \033[92m✔ {status_line.strip()}\033[0m")
+            else:
+                failed_count += 1
+                print(f"  \033[91m✖ ไม่ผ่าน (FAIL)\033[0m")
+                print(proc.stderr or proc.stdout)
+
+        print("\n" + "=" * 75)
+        print("📊 สรุปผลการรัน Test Cases ทั้ง 10 เคส:")
+        print("=" * 75)
+        print(f"  การทดสอบทั้งหมด : {len(TEST_FILES)} ไฟล์")
+        print(f"  \033[92mผ่าน (Passed)    : {passed_count} ไฟล์\033[0m")
+        if failed_count > 0:
+            print(f"  \033[91mไม่ผ่าน (Failed)  : {failed_count} ไฟล์\033[0m")
         else:
-            failed_count += 1
-            print(f"  \033[91m✖ ไม่ผ่าน (FAIL)\033[0m")
-            print(proc.stderr or proc.stdout)
-
-    print("\n" + "=" * 75)
-    print("📊 สรุปผลการรัน Test Cases ทั้ง 10 เคส:")
-    print("=" * 75)
-    print(f"  การทดสอบทั้งหมด : {len(TEST_FILES)} ไฟล์")
-    print(f"  \033[92mผ่าน (Passed)    : {passed_count} ไฟล์\033[0m")
-    if failed_count > 0:
-        print(f"  \033[91mไม่ผ่าน (Failed)  : {failed_count} ไฟล์\033[0m")
-    else:
-        print("  \033[92mสถานะ            : ผ่านครบ 100% ทุกไฟล์แบบทดสอบ! 🎉\033[0m")
-    print("=" * 75 + "\n")
-    return 0 if failed_count == 0 else 1
+            print("  \033[92mสถานะ            : ผ่านครบ 100% ทุกไฟล์แบบทดสอบ! 🎉\033[0m")
+        print("=" * 75 + "\n")
+        return 0 if failed_count == 0 else 1
+    finally:
+        stop_local_app()
 
 run_all_cases = run_all_tests
 

@@ -13,6 +13,10 @@ import os
 import time
 import unittest
 
+for stream in (sys.stdout, sys.stderr):
+    if hasattr(stream, "reconfigure"):
+        stream.reconfigure(encoding="utf-8")
+
 # กำหนดเส้นทางโฟลเดอร์
 BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(BACKEND_DIR, '..'))

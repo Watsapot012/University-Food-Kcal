@@ -219,8 +219,10 @@ export const RestaurantsPage: React.FC<RestaurantsPageProps> = ({
             return (
               <div
                 key={restaurant.id}
+                data-testid="restaurant-card"
+                data-id={restaurant.id}
                 onClick={() => onSelectRestaurant(restaurant)}
-                className="group bg-white rounded-2xl border border-slate-200 hover:border-orange-300 hover:shadow-lg transition-all overflow-hidden cursor-pointer flex flex-col"
+                className="restaurant-card group bg-white rounded-2xl border border-slate-200 hover:border-orange-300 hover:shadow-lg transition-all overflow-hidden cursor-pointer flex flex-col"
               >
                 <div className="h-48 w-full relative overflow-hidden bg-slate-100">
                   <img

@@ -296,7 +296,7 @@ Selenium Test Case: ${tc.id} - ${tc.name}
 
 from helpers import get_driver, APP_URL, By, Keys, WebDriverWait, EC
 
-def test_${tc.id.lower().replace('-', '_')}():
+def test_${tc.id.toLowerCase().replace('-', '_')}():
     print("🚀 เริ่มต้นรัน Selenium WebDriver ทดสอบหน้าเว็บจริง...")
     
     # หากรันด้วยคำสั่ง: python tests/${tc.pyFile} --browser 
@@ -316,7 +316,7 @@ ${tc.steps.map((s, idx) => `        # ${idx + 1}. ${s}`).join('\n')}
         driver.quit()
 
 if __name__ == "__main__":
-    test_${tc.id.lower().replace('-', '_')}()
+    test_${tc.id.toLowerCase().replace('-', '_')}()
 `;
   };
 

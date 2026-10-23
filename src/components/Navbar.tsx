@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Utensils, Flame, Store, BookOpen, ShieldCheck, Menu, X, User as UserIcon, Sliders, CalendarCheck, LogIn, LogOut, Sparkles } from 'lucide-react';
 import { User } from '../types';
 
@@ -192,4 +193,3 @@ export const Navbar: React.FC<NavbarProps> = ({
     </header>
   );
 };
-

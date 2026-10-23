@@ -57,8 +57,9 @@ def test_selenium_tc_home_01():
 
         # 5. Assertions ตรวจสอบความถูกต้อง
         assert len(food_cards) > 0, "ต้องพบการ์ดเมนูอาหารอย่างน้อย 1 รายการ"
-        matched_count = sum(1 for card in food_cards if search_keyword in card.text)
-        assert matched_count > 0, f"ต้องพบเมนูที่มีคำว่า '{search_keyword}' บนหน้าจอ"
+        assert all(search_keyword in card.text for card in food_cards), (
+            f"เมนูทุกใบต้องมีคำว่า '{search_keyword}' หลังกรอง"
+        )
 
         print(f"\n\033[92m✔ ผลการทดสอบ (Selenium): ผ่าน (PASS) - ค้นหา '{search_keyword}' และแสดงผลบนเบราว์เซอร์ถูกต้อง\033[0m\n")
 

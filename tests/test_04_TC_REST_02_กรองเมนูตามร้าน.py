@@ -32,7 +32,7 @@ def test_selenium_tc_rest_02():
 
         # 1. คลิกแท็บร้านอาหาร
         nav_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'ร้านอาหาร')] | //nav//button"))
+            EC.element_to_be_clickable((By.ID, "nav-link-restaurants"))
         )
         nav_button.click()
 
@@ -41,7 +41,8 @@ def test_selenium_tc_rest_02():
         first_store_card = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, ".restaurant-card, [data-testid='restaurant-card'], div[data-id]"))
         )
-        print(f"   คลิกเลือกร้าน: {first_store_card.text}")
+        restaurant_name = first_store_card.find_element(By.TAG_NAME, "h3").text
+        print(f"   คลิกเลือกร้าน: {restaurant_name}")
         first_store_card.click()
 
         # 3. ตรวจสอบเมนูอาหารใต้ร้านค้านั้น
@@ -55,6 +56,9 @@ def test_selenium_tc_rest_02():
             print(f"   🍽️ {item.text}")
 
         assert len(menu_items) > 0, "ต้องพบเมนูอาหารของร้านอย่างน้อย 1 รายการ"
+        assert all(restaurant_name in item.text for item in menu_items), (
+            f"เมนูทุกใบต้องเป็นของร้าน '{restaurant_name}'"
+        )
 
         print("\n\033[92m✔ ผลการทดสอบ (Selenium): ผ่าน (PASS) - กรองเมนูตามร้านค้าที่เลือกสำเร็จ\033[0m\n")
 

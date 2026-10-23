@@ -32,7 +32,7 @@ def test_selenium_tc_food_01():
 
         # 1. คลิกแท็บ "เมนูอาหาร"
         food_tab = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'เมนูอาหาร')] | //nav//button"))
+            EC.element_to_be_clickable((By.ID, "nav-link-foods"))
         )
         food_tab.click()
 
@@ -56,6 +56,7 @@ def test_selenium_tc_food_01():
             print(f"   🍲 {c.text}")
 
         assert len(matched_cards) > 0, "ต้องพบเมนูต้มยำอย่างน้อย 1 รายการ"
+        assert len(matched_cards) == len(food_cards), "ผลลัพธ์ทุกใบต้องตรงกับคำค้นหา 'ต้มยำ'"
 
         print("\n\033[92m✔ ผลการทดสอบ (Selenium): ผ่าน (PASS) - กรองเมนูต้มยำตามคีย์เวิร์ดสำเร็จ\033[0m\n")
 

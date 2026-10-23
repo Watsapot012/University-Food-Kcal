@@ -34,7 +34,7 @@ def test_selenium_tc_rest_01():
         # 2. คลิกปุ่มแท็บ 'ร้านอาหาร' บน Navbar
         print("👉 2. ค้นหาปุ่มนำทาง (Navigation Button) 'ร้านอาหาร' และสั่ง click()")
         nav_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'ร้านอาหาร')] | //nav//button"))
+            EC.element_to_be_clickable((By.ID, "nav-link-restaurants"))
         )
         nav_button.click()
 

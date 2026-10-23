@@ -22,6 +22,8 @@ export const FoodListPage: React.FC<FoodListPageProps> = ({
   const [selectedRestaurantId, setSelectedRestaurantId] = useState<string>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [kcalRange, setKcalRange] = useState<string>('all');
+  const [kcalMin, setKcalMin] = useState('');
+  const [kcalMax, setKcalMax] = useState('');
   const [priceRange, setPriceRange] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('default');
 
@@ -64,6 +66,8 @@ export const FoodListPage: React.FC<FoodListPageProps> = ({
           if (kcalRange === '500-700' && (food.kcal <= 500 || food.kcal > 700)) return false;
           if (kcalRange === 'over-700' && food.kcal <= 700) return false;
         }
+        if (kcalMin !== '' && food.kcal < Number(kcalMin)) return false;
+        if (kcalMax !== '' && food.kcal > Number(kcalMax)) return false;
 
         // Price Range filter
         if (priceRange !== 'all') {
@@ -82,13 +86,15 @@ export const FoodListPage: React.FC<FoodListPageProps> = ({
         if (sortBy === 'protein-desc') return b.protein - a.protein;
         return a.id - b.id;
       });
-  }, [foods, search, selectedRestaurantId, selectedCategory, kcalRange, priceRange, sortBy]);
+  }, [foods, search, selectedRestaurantId, selectedCategory, kcalRange, kcalMin, kcalMax, priceRange, sortBy]);
 
   const handleResetFilters = () => {
     setSearch('');
     setSelectedRestaurantId('all');
     setSelectedCategory('all');
     setKcalRange('all');
+    setKcalMin('');
+    setKcalMax('');
     setPriceRange('all');
     setSortBy('default');
   };
@@ -98,6 +104,8 @@ export const FoodListPage: React.FC<FoodListPageProps> = ({
     selectedRestaurantId !== 'all' ||
     selectedCategory !== 'all' ||
     kcalRange !== 'all' ||
+    kcalMin !== '' ||
+    kcalMax !== '' ||
     priceRange !== 'all' ||
     sortBy !== 'default';
 
@@ -240,6 +248,39 @@ export const FoodListPage: React.FC<FoodListPageProps> = ({
               <option value="price-desc">💰 ราคา: สูงไปต่ำ</option>
               <option value="protein-desc">💪 โปรตีนสูงสุด</option>
             </select>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-end gap-3">
+          <div>
+            <label htmlFor="kcal-min" className="block text-[11px] font-semibold text-slate-500 mb-1">
+              Kcal ต่ำสุด
+            </label>
+            <input
+              id="kcal-min"
+              aria-label="Kcal ต่ำสุด"
+              type="number"
+              min="0"
+              value={kcalMin}
+              onChange={(e) => setKcalMin(e.target.value)}
+              placeholder="ไม่กำหนด"
+              className="w-32 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-orange-500"
+            />
+          </div>
+          <div>
+            <label htmlFor="kcal-max" className="block text-[11px] font-semibold text-slate-500 mb-1">
+              Kcal สูงสุด
+            </label>
+            <input
+              id="kcal-max"
+              aria-label="Kcal สูงสุด"
+              type="number"
+              min="0"
+              value={kcalMax}
+              onChange={(e) => setKcalMax(e.target.value)}
+              placeholder="ไม่กำหนด"
+              className="w-32 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-orange-500"
+            />
           </div>
         </div>
 
