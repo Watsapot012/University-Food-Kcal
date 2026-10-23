@@ -1,3 +1,4 @@
-# Requirements for Running Test Suite
+# Requirements for Running Selenium Webdriver Test Suite
+selenium>=4.15.0
+webdriver-manager>=4.0.0
 pytest>=7.0.0
-requests>=2.28.0

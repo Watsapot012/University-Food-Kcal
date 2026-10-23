@@ -69,7 +69,9 @@ def run_all_tests():
     else:
         print("  \033[92mสถานะ            : ผ่านครบ 100% ทุกไฟล์แบบทดสอบ! 🎉\033[0m")
     print("=" * 75 + "\n")
+    return 0 if failed_count == 0 else 1
 
+run_all_cases = run_all_tests
 
 if __name__ == "__main__":
-    run_all_tests()
+    sys.exit(run_all_tests())

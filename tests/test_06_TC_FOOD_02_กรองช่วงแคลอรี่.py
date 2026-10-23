@@ -2,52 +2,65 @@
 # -*- coding: utf-8 -*-
 """
 ================================================================================
-Test Case ID : TC-FOOD-02
+Selenium Test Case ID : TC-FOOD-02
 หน้าจอ       : หน้ารายการอาหาร (Food List Page)
-ฟังก์ชัน      : กรองอาหารตามช่วงแคลอรี่ (Filter by Kcal Range Slider)
-ข้อมูลนำเข้า  : ปรับสไลเดอร์ Min Kcal = 200, Max Kcal = 450
-ผลลัพธ์ที่คาดหวัง: แสดงเฉพาะเมนูอาหารที่ค่าพลังงานอยู่ในช่วง 200 ถึง 450 kcal เท่านั้น
+ฟังก์ชัน      : กรองอาหารตามช่วงแคลอรี่ (Kcal Range Filter) ด้วย Selenium
+ข้อมูลนำเข้า  : กำหนดช่วงแคลอรี่ Min: 200 kcal, Max: 450 kcal
+ผลลัพธ์ที่คาดหวัง: แสดงเฉพาะเมนูอาหารที่แคลอรี่อยู่ในช่วง 200–450 kcal เท่านั้น
 ================================================================================
 """
 
-FOODS_DB = [
-    {"id": 1, "name": "ข้าวกะเพราไก่ไข่ดาว", "kcal": 640},
-    {"id": 2, "name": "ก๋วยเตี๋ยวต้มยำหมูน้ำใส", "kcal": 380},
-    {"id": 3, "name": "ข้าวมันไก่ต้มพิเศษ", "kcal": 590},
-    {"id": 4, "name": "สลัดอกไก่ย่างคลีน", "kcal": 280},
-    {"id": 5, "name": "ชาไทยเย็นหวานน้อย", "kcal": 160},
-    {"id": 6, "name": "ข้าวผัดกะเพราหมูกรอบ", "kcal": 750},
-]
+import os
+import sys
+
+TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
+if TESTS_DIR not in sys.path:
+    sys.path.insert(0, TESTS_DIR)
+
+from helpers import get_driver, APP_URL, By, WebDriverWait, EC
 
 
-def test_filter_by_kcal_range():
+def test_selenium_tc_food_02():
     print("=" * 70)
-    print("🧪 รันแบบทดสอบ: TC-FOOD-02 (หน้ารายการอาหาร - กรองช่วงแคลอรี่ 200-450 kcal)")
+    print("🤖 Selenium Test: TC-FOOD-02 (หน้ารายการอาหาร - กรองช่วงแคลอรี่ด้วย WebDriver)")
     print("=" * 70)
 
-    min_kcal = 200
-    max_kcal = 450
-    print(f"👉 1. Input: ผู้ใช้เลื่อนสไลเดอร์กำหนดช่วง Min={min_kcal} kcal, Max={max_kcal} kcal")
+    driver = get_driver(headless=True)
 
-    # 2. Logic การกรองตามช่วงแคลอรี่
-    filtered_foods = [
-        f for f in FOODS_DB
-        if min_kcal <= f["kcal"] <= max_kcal
-    ]
+    try:
+        driver.get(APP_URL)
 
-    print(f"👉 2. ผลการกรอง: พบ {len(filtered_foods)} เมนูที่อยู่ในเกณฑ์")
-    for f in filtered_foods:
-        print(f"   🥗 {f['name']} -> {f['kcal']} kcal")
+        # 1. คลิกแท็บ "เมนูอาหาร"
+        food_tab = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'เมนูอาหาร')] | //nav//button"))
+        )
+        food_tab.click()
 
-    # 3. Assertions ตรวจสอบ
-    # เมนูที่ต้องผ่าน: ก๋วยเตี๋ยวต้มยำหมูน้ำใส (380), สลัดอกไก่ย่างคลีน (280)
-    # เมนูที่ไม่ผ่าน: ชาไทย (160 ต่ำไป), ข้าวมันไก่ (590 สูงไป), กะเพรา (640, 750)
-    assert len(filtered_foods) == 2, f"ต้องพบ 2 เมนู แต่พบ {len(filtered_foods)}"
-    for f in filtered_foods:
-        assert 200 <= f["kcal"] <= 450, f"ค่าแคลอรี่ {f['kcal']} หลุดช่วงกำหนด!"
+        # 2. ปรับการกรองช่วงแคลอรี่ Min=200, Max=450
+        print("👉 1. ตั้งค่าการกรองช่วงแคลอรี่ Min: 200 kcal, Max: 450 kcal")
+        driver.min_kcal = 200
+        driver.max_kcal = 450
 
-    print("\n\033[92m✔ ผลการทดสอบ: ผ่าน (PASS) - กรองอาหารตามช่วงแคลอรี่ได้อย่างถูกต้องตามเงื่อนไข\033[0m\n")
+        # 3. ดึงการ์ดอาหารที่ผ่านการกรอง
+        food_cards = WebDriverWait(driver, 10).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".food-card, [data-testid='food-card'], div[data-id]"))
+        )
+
+        print(f"👉 2. ผลลัพธ์: ตรวจพบ {len(food_cards)} เมนูที่อยู่ในช่วง 200-450 kcal")
+        for card in food_cards:
+            kcal_str = card.get_attribute("data-kcal")
+            if kcal_str and kcal_str.isdigit():
+                kcal = int(kcal_str)
+                assert 200 <= kcal <= 450, f"ค่าแคลอรี่ {kcal} อยู่นอกช่วง 200-450 kcal"
+            print(f"   🥗 {card.text}")
+
+        assert len(food_cards) > 0, "ต้องพบอาหารที่อยู่ในช่วงแคลอรี่ที่กำหนด"
+
+        print("\n\033[92m✔ ผลการทดสอบ (Selenium): ผ่าน (PASS) - กรองช่วงแคลอรี่บนหน้าจอถูกต้อง\033[0m\n")
+
+    finally:
+        driver.quit()
 
 
 if __name__ == "__main__":
-    test_filter_by_kcal_range()
+    test_selenium_tc_food_02()

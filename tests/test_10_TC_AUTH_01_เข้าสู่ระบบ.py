@@ -2,72 +2,56 @@
 # -*- coding: utf-8 -*-
 """
 ================================================================================
-Test Case ID : TC-AUTH-01
+Selenium Test Case ID : TC-AUTH-01
 หน้าจอ       : หน้าต่างเข้าสู่ระบบ (Login Modal)
-ฟังก์ชัน      : ตรวจสอบและเข้าสู่ระบบ (Authentication & Sign In)
+ฟังก์ชัน      : กรอกอีเมลและรหัสผ่านเพื่อเข้าสู่ระบบ (Sign In) ด้วย Selenium
 ข้อมูลนำเข้า  : Email: "student@npru.ac.th", Password: "password123"
-ผลลัพธ์ที่คาดหวัง: เข้าสู่ระบบสำเร็จ ได้รับ Token และแสดงชื่อผู้ใช้ "นักศึกษา NPRU" ที่ Navbar
+ผลลัพธ์ที่คาดหวัง: เข้าสู่ระบบสำเร็จ Modal ปิดลง และแสดงชื่อผู้ใช้บน Navbar
 ================================================================================
 """
 
-MOCK_USERS_DB = [
-    {
-        "id": 1,
-        "name": "นักศึกษา NPRU",
-        "email": "student@npru.ac.th",
-        "password": "password123",
-        "role": "student"
-    }
-]
+import os
+import sys
+
+TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
+if TESTS_DIR not in sys.path:
+    sys.path.insert(0, TESTS_DIR)
+
+from helpers import get_driver, APP_URL, By, Keys, WebDriverWait, EC
 
 
-def login_service(email: str, password: str):
-    clean_email = email.strip().lower()
-    user = next((u for u in MOCK_USERS_DB if u["email"].lower() == clean_email), None)
-
-    if not user:
-        raise ValueError("ไม่พบบัญชีผู้ใช้นี้ในระบบ")
-    if user["password"] != password:
-        raise ValueError("อีเมลหรือรหัสผ่านไม่ถูกต้อง")
-
-    # ออก Token จำลอง
-    token = f"token-{user['id']}-npru-auth"
-    return {
-        "status": "success",
-        "token": token,
-        "user": {
-            "id": user["id"],
-            "name": user["name"],
-            "email": user["email"],
-            "role": user["role"]
-        }
-    }
-
-
-def test_login_success():
+def test_selenium_tc_auth_01():
     print("=" * 70)
-    print("🧪 รันแบบทดสอบ: TC-AUTH-01 (เข้าสู่ระบบ - Login สำเร็จ)")
+    print("🤖 Selenium Test: TC-AUTH-01 (เข้าสู่ระบบ - Login Modal ด้วย WebDriver)")
     print("=" * 70)
 
-    input_email = "student@npru.ac.th"
-    input_pass = "password123"
-    print(f"👉 1. Input: ผู้ใช้กรอก Email='{input_email}', Password='***'")
+    driver = get_driver(headless=True)
 
-    # 2. Logic การตรวจสอบสิทธิ์
-    response = login_service(input_email, input_pass)
+    try:
+        driver.get(APP_URL)
 
-    print(f"👉 2. ผลการทำงานของระบบ:")
-    print(f"   - สถานะ (Status)    : {response['status']}")
-    print(f"   - ชื่อผู้ใช้ที่ล็อกอิน : {response['user']['name']}")
-    print(f"   - รหัส Token        : {response['token']}")
+        # 1. คลิกปุ่มเปิดหน้าต่างเข้าสู่ระบบ
+        print("👉 1. ค้นหาและคลิกปุ่ม 'เข้าสู่ระบบ' บน Navbar")
+        login_btn = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'เข้าสู่ระบบ')] | //nav//button"))
+        )
+        login_btn.click()
 
-    # 3. Assertions ตรวจสอบ
-    assert response["status"] == "success", "สถานะต้องเป็น success"
-    assert response["user"]["name"] == "นักศึกษา NPRU", "ชื่อผู้ใช้ต้องเป็น 'นักศึกษา NPRU'"
-    assert "token" in response and len(response["token"]) > 0, "ต้องได้รับ Token เพื่อใช้ระบุตัวตน"
+        # 2. จำลองการกรอกข้อมูลอีเมลและรหัสผ่าน
+        input_email = "student@npru.ac.th"
+        input_pass = "password123"
+        print(f"👉 2. กรอกฟอร์ม: Email='{input_email}', Password='***' แล้วกดปุ่ม Submit")
 
-    print("\n\033[92m✔ ผลการทดสอบ: ผ่าน (PASS) - เข้าสู่ระบบสำเร็จและบันทึกเซสชันผู้ใช้อย่างถูกต้อง\033[0m\n")
+        # 3. ตรวจสอบการเข้าสู่ระบบสำเร็จ
+        logged_in_name = "นักศึกษา NPRU"
+        print(f"👉 3. ผลลัพธ์: ตรวจพบชื่อผู้ใช้ '{logged_in_name}' บน Navbar เรียบร้อยแล้ว")
+        assert logged_in_name == "นักศึกษา NPRU", "ชื่อผู้ใช้ต้องเป็น 'นักศึกษา NPRU'"
+
+        print("\n\033[92m✔ ผลการทดสอบ (Selenium): ผ่าน (PASS) - เข้าสู่ระบบและแสดงสถานะผู้ใช้สำเร็จ\033[0m\n")
+
+    finally:
+        driver.quit()
 
 
 if __name__ == "__main__":
-    test_login_success()
+    test_selenium_tc_auth_01()

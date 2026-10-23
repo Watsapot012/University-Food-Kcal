@@ -1,7 +1,7 @@
-# 🧪 โครงสร้างชุดทดสอบ (Tests Directory) - University Food Kcal
+# 🤖 Selenium WebDriver Test Suite - University Food Kcal
 **มหาวิทยาลัยราชภัฏนครปฐม (NPRU)**
 
-เอกสารและไฟล์แบบทดสอบเฉพาะของระบบเว็บไซต์ University Food Kcal โดยแบ่งตามรหัส Test Case ID จริงของระบบทั้ง 10 เคส:
+ชุดทดสอบเบราว์เซอร์อัตโนมัติด้วย **Selenium WebDriver (Python)** ครอบคลุมการทดสอบ UI, Web Elements, การค้นหา, ตัวกรอง, ฟอร์มคำนวณ BMR/TDEE และระบบเข้าสู่ระบบของเว็บไซต์เราครบทั้ง 10 เคส:
 
 ---
 

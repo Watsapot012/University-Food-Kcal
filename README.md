@@ -208,10 +208,12 @@ npm run dev
   ./run_test.sh
   ```
 
-### 2. วิธีรันชุดทดสอบ 10 Test Cases เฉพาะเว็บเรา (Python)
+### 2. วิธีรันชุดทดสอบ Selenium WebDriver (10 Test Cases เฉพาะเว็บเรา)
 รันแบบรวมทั้ง 10 เคสต่อเนื่อง:
 ```bash
 python tests/test_portal_10_cases.py
+# หรือ
+python tests/run_tests.py
 # หรือ
 npm run test:suite
 ```
