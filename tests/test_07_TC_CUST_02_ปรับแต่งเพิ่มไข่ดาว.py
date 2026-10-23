@@ -11,13 +11,15 @@ Selenium Test Case ID : TC-CUST-02
 """
 
 import os
+import re
 import sys
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 if TESTS_DIR not in sys.path:
     sys.path.insert(0, TESTS_DIR)
 
-from helpers import get_driver, APP_URL, By, WebDriverWait, EC
+from helpers import get_driver, quit_driver, APP_URL, By, WebDriverWait, EC
+from selenium.webdriver.support.ui import Select
 
 
 def test_selenium_tc_cust_02():
@@ -30,28 +32,47 @@ def test_selenium_tc_cust_02():
     try:
         driver.get(APP_URL)
 
-        # 1. นำทางไปยังหน้า Customizer
+        # 1. Navigate to the meal customizer and read the selected dish's calories.
         customizer_tab = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'ปรับแต่ง')] | //button[contains(text(), 'จัดมื้อ')] | //nav//button"))
+            EC.element_to_be_clickable((By.ID, "nav-link-customizer"))
         )
         customizer_tab.click()
 
-        # 2. จำลองการคลิกเลือก Checkbox "+ไข่ดาว" (+90 kcal)
-        base_kcal = 550
+        menu_select = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.TAG_NAME, "select"))
+        )
+        selected_menu = Select(menu_select).first_selected_option.text
+        base_match = re.search(r"\((\d+)\s*kcal\)", selected_menu)
+        assert base_match, f"อ่านค่าแคลอรี่จากเมนูที่เลือกไม่ได้: {selected_menu}"
+        base_kcal = int(base_match.group(1))
         addon_kcal = 90
-        expected_kcal = base_kcal + addon_kcal  # 640 kcal
 
-        print(f"👉 1. เมนูตั้งต้น: ข้าวกะเพราไก่ ({base_kcal} kcal)")
-        print(f"👉 2. คลิก Checkbox ท็อปปิ้ง 'ไข่ดาว (+{addon_kcal} kcal)'")
+        print(f"👉 1. เมนูตั้งต้น: {selected_menu}")
+        print(f"👉 2. เลือกท็อปปิ้ง 'ไข่ดาว (+{addon_kcal} kcal)' บนหน้าจอ")
+        fried_egg_option = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((
+                By.XPATH,
+                "//div[contains(@class, 'cursor-pointer')][.//div[normalize-space()='ไข่ดาว']]",
+            ))
+        )
+        fried_egg_option.click()
 
-        # 3. ตรวจสอบค่าผลลัพธ์ที่อัปเดตบนหน้าเว็บ
-        print(f"👉 3. ค่าที่คำนวณได้ใหม่บนหน้าจอ: {expected_kcal} kcal")
-        assert expected_kcal == 640, f"ค่าแคลอรี่รวมต้องเท่ากับ 640 kcal แต่ได้ {expected_kcal}"
+        expected_kcal = base_kcal + addon_kcal
+        total_kcal = WebDriverWait(driver, 10).until(
+            lambda current_driver: current_driver.find_element(
+                By.XPATH,
+                "//*[text()='แคลอรี่รวมหลังปรับแต่ง']/following-sibling::div//span[contains(@class, 'text-5xl')]",
+            )
+        ).text
+        print(f"👉 3. ค่าบนหน้าจอหลังเลือกไข่ดาว: {total_kcal} kcal (คาดหวัง {expected_kcal} kcal)")
+        assert int(total_kcal) == expected_kcal, (
+            f"ค่าแคลอรี่รวมบนหน้าจอต้องเป็น {expected_kcal} kcal แต่ได้ {total_kcal}"
+        )
 
         print("\n\033[92m✔ ผลการทดสอบ (Selenium): ผ่าน (PASS) - คำนวณแคลอรี่สุทธิใหม่ Real-time สำเร็จ\033[0m\n")
 
     finally:
-        driver.quit()
+        quit_driver(driver)
 
 
 if __name__ == "__main__":

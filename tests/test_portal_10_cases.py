@@ -9,7 +9,6 @@
 
 import subprocess
 import sys
-import glob
 import os
 
 from helpers import stop_local_app
@@ -43,6 +42,10 @@ def run_all_tests():
 
         passed_count = 0
         failed_count = 0
+        test_options = [
+            option for option in sys.argv[1:]
+            if option in ("--browser", "--keep-open", "--no-keep-open")
+        ]
 
         for idx, test_file_name in enumerate(TEST_FILES, 1):
             target_path = test_file_name
@@ -54,22 +57,15 @@ def run_all_tests():
                 continue
 
             print(f"\n▶ กำลังรัน: [{idx}/10] {test_file_name} ...")
-            proc = subprocess.run(
-                [sys.executable, target_path],
-                capture_output=True,
-                text=True,
-                encoding="utf-8",
-            )
+            command = [sys.executable, "-u", target_path, *test_options]
+            proc = subprocess.run(command)
 
             if proc.returncode == 0:
                 passed_count += 1
-                lines = [line for line in proc.stdout.split("\n") if "PASS" in line or "ผ่าน" in line]
-                status_line = lines[-1] if lines else "ผ่านการทดสอบ (PASS)"
-                print(f"  \033[92m✔ {status_line.strip()}\033[0m")
+                print("  \033[92m✔ ผ่าน (PASS)\033[0m")
             else:
                 failed_count += 1
                 print(f"  \033[91m✖ ไม่ผ่าน (FAIL)\033[0m")
-                print(proc.stderr or proc.stdout)
 
         print("\n" + "=" * 75)
         print("📊 สรุปผลการรัน Test Cases ทั้ง 10 เคส:")

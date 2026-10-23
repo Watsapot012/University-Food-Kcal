@@ -8,7 +8,6 @@ import { LoginPage } from './pages/LoginPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { MealCustomizerPage } from './pages/MealCustomizerPage';
 import { DailyDashboardPage } from './pages/DailyDashboardPage';
-import { E2ETestRunnerPage } from './pages/E2ETestRunnerPage';
 import { FoodDetailModal } from './components/FoodDetailModal';
 import { api } from './services/api';
 import { Restaurant, Food, AdminStats, User, UserProfile, MealLogItem } from './types';
@@ -393,15 +392,6 @@ export default function App() {
           />
         )}
 
-        {activeTab === 'tests' && (
-          <E2ETestRunnerPage
-            restaurants={restaurants}
-            foods={foods}
-            stats={stats}
-            onNavigateTab={handleNavigate}
-          />
-        )}
-
         {activeTab === 'admin' && (
           <AdminDashboardPage
             restaurants={restaurants}
@@ -493,12 +483,6 @@ export default function App() {
                 className="hover:text-black transition-colors cursor-pointer"
               >
                 บันทึกรายวัน
-              </button>
-              <button
-                onClick={() => handleNavigate('tests')}
-                className="hover:text-black transition-colors font-semibold text-emerald-600 cursor-pointer"
-              >
-                🧪 ทดสอบ E2E (10 Cases)
               </button>
               <button
                 onClick={() => handleNavigate('admin')}

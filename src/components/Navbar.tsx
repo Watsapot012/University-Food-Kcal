@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Utensils, Flame, Store, BookOpen, ShieldCheck, Menu, X, User as UserIcon, Sliders, CalendarCheck, LogIn, LogOut, Sparkles } from 'lucide-react';
+import { Utensils, Flame, Store, BookOpen, ShieldCheck, Menu, X, User as UserIcon, Sliders, CalendarCheck, LogIn, LogOut } from 'lucide-react';
 import { User } from '../types';
 
 interface NavbarProps {
@@ -26,7 +26,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'foods', label: 'เมนูอาหาร', icon: BookOpen },
     { id: 'customizer', label: 'ปรับแต่งอาหาร', icon: Sliders },
     { id: 'dashboard', label: 'บันทึกรายวัน', icon: CalendarCheck },
-    { id: 'tests', label: '🧪 ทดสอบระบบ E2E', icon: Sparkles },
     { id: 'admin', label: 'จัดการข้อมูล (Admin)', icon: ShieldCheck },
   ];
 

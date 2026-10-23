@@ -29,6 +29,7 @@ APP_URL = os.environ.get("APP_URL", "http://localhost:3000")
 API_URL = os.environ.get("API_URL", f"{APP_URL.rstrip('/')}/api")
 _LOCAL_SERVER: Optional[subprocess.Popen] = None
 _PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_HEADED_DRIVER_IDS = set()
 
 
 def ensure_local_app():
@@ -57,6 +58,7 @@ def ensure_local_app():
 
     server_env = os.environ.copy()
     server_env["PORT"] = str(port)
+    server_env["DISABLE_HMR"] = "true"
     _LOCAL_SERVER = subprocess.Popen(
         [node, server_entry, "server.ts"],
         cwd=_PROJECT_ROOT,
@@ -105,8 +107,11 @@ try:
     from selenium.webdriver.chrome.options import Options as SeleniumChromeOptions
     from selenium.webdriver.support.ui import WebDriverWait as SeleniumWait
     from selenium.webdriver.support import expected_conditions as SeleniumEC
+    from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
+    WAIT_IGNORED_EXCEPTIONS = (NoSuchElementException, StaleElementReferenceException)
     SELENIUM_AVAILABLE = True
 except ImportError:
+    WAIT_IGNORED_EXCEPTIONS = ()
     SELENIUM_AVAILABLE = False
 
 
@@ -297,7 +302,19 @@ class WebDriverWait:
         self.timeout = timeout
 
     def until(self, condition):
-        return condition(self.driver)
+        deadline = time.monotonic() + self.timeout
+        last_exception = None
+        while time.monotonic() < deadline:
+            try:
+                result = condition(self.driver)
+                if result:
+                    return result
+            except WAIT_IGNORED_EXCEPTIONS as exc:
+                last_exception = exc
+            time.sleep(0.1)
+        if last_exception:
+            raise TimeoutError(f"Condition was not met within {self.timeout} seconds.") from last_exception
+        raise TimeoutError(f"Condition was not met within {self.timeout} seconds.")
 
 
 class EC:
@@ -368,12 +385,33 @@ def get_driver(headless: Optional[bool] = None):
 
             driver.set_page_load_timeout(20)
             driver.implicitly_wait(7)
+            if not headless:
+                _HEADED_DRIVER_IDS.add(id(driver))
             return driver
         except Exception as e:
             if not headless:
                 print(f"⚠️  ไม่สามารถเปิด Chrome GUI บนเครื่องนี้ได้ ({e}) - สลับเป็นโหมด E2E HTTP Live Tester อัตโนมัติ")
 
     return MockWebDriver(APP_URL)
+
+
+def quit_driver(driver):
+    """Keep headed test browsers open for inspection in interactive terminals."""
+    keep_open = (
+        "--keep-open" in sys.argv
+        or (
+            "--no-keep-open" not in sys.argv
+            and id(driver) in _HEADED_DRIVER_IDS
+            and sys.stdin.isatty()
+        )
+    )
+    _HEADED_DRIVER_IDS.discard(id(driver))
+    if keep_open:
+        try:
+            input("ดูผลการทดสอบในเบราว์เซอร์แล้วกด Enter เพื่อปิดและดำเนินการต่อ...")
+        except EOFError:
+            print("ไม่มีคอนโซลรับอินพุต ปิดเบราว์เซอร์ตามปกติ")
+    driver.quit()
 
 
 ensure_local_app()

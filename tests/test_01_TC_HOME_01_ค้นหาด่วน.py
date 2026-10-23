@@ -18,7 +18,7 @@ TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 if TESTS_DIR not in sys.path:
     sys.path.insert(0, TESTS_DIR)
 
-from helpers import get_driver, APP_URL, By, Keys, WebDriverWait, EC
+from helpers import get_driver, quit_driver, APP_URL, By, Keys, WebDriverWait, EC
 
 
 def test_selenium_tc_home_01():
@@ -64,7 +64,7 @@ def test_selenium_tc_home_01():
         print(f"\n\033[92m✔ ผลการทดสอบ (Selenium): ผ่าน (PASS) - ค้นหา '{search_keyword}' และแสดงผลบนเบราว์เซอร์ถูกต้อง\033[0m\n")
 
     finally:
-        driver.quit()
+        quit_driver(driver)
 
 
 if __name__ == "__main__":
