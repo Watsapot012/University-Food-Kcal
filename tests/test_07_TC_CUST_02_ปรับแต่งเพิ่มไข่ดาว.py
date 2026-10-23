@@ -25,7 +25,7 @@ def test_selenium_tc_cust_02():
     print("🤖 Selenium Test: TC-CUST-02 (ปรับแต่งอาหาร - เพิ่มไข่ดาวคำนวณ Real-time)")
     print("=" * 70)
 
-    driver = get_driver(headless=True)
+    driver = get_driver()
 
     try:
         driver.get(APP_URL)

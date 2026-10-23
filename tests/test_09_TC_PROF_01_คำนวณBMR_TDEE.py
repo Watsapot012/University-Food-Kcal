@@ -25,7 +25,7 @@ def test_selenium_tc_prof_01():
     print("🤖 Selenium Test: TC-PROF-01 (โปรไฟล์ - กรอกฟอร์มคำนวณ BMR & TDEE)")
     print("=" * 70)
 
-    driver = get_driver(headless=True)
+    driver = get_driver()
 
     try:
         driver.get(APP_URL)

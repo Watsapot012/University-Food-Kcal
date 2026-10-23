@@ -28,7 +28,7 @@ def test_selenium_tc_home_01():
 
     # 1. เริ่มต้นเปิดเบราว์เซอร์ผ่าน Selenium WebDriver
     print(f"👉 1. เปิดเบราว์เซอร์ไปยัง URL: {APP_URL}")
-    driver = get_driver(headless=True)
+    driver = get_driver()
 
     try:
         driver.get(APP_URL)

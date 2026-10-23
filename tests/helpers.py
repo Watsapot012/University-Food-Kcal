@@ -247,27 +247,53 @@ class EC:
         return _predicate
 
 
-def get_driver(headless: bool = True):
+def get_driver(headless: Optional[bool] = None):
     """
-    สร้างและคืนค่า WebDriver
-    1. หากมี selenium และ Google Chrome ติดตั้งอยู่ จะใช้ Chrome WebDriver ของจริง
-    2. หากไม่มี จะใช้ MockWebDriver สำหรับรัน Continuous Integration / Headless Test
+    สร้างและคืนค่า Selenium WebDriver
+    - หากระบุ --browser หรือ --gui ใน argument หรือ HEADLESS=0 จะเปิดหน้าต่าง Google Chrome จริงขึ้นมาบนหน้าจอ
+    - หากมี selenium และ Google Chrome ติดตั้งอยู่ จะเปิดเบราว์เซอร์จริง
+    - หากรันบน Server ที่ไม่มี GUI / Chrome จะทำงานผ่าน compatibility driver โดยยิง HTTP ไปยังเว็บไซต์จริง
     """
+    # ตรวจสอบว่าผู้ใช้ต้องการเปิดหน้าต่างเบราว์เซอร์จริงหรือไม่
+    if headless is None:
+        if "--browser" in sys.argv or "--headed" in sys.argv or "--gui" in sys.argv:
+            headless = False
+        elif os.environ.get("HEADLESS", "").lower() in ("0", "false", "no"):
+            headless = False
+        else:
+            # ค่าเริ่มต้นเมื่อรันผ่าน terminal ให้ตรวจว่ามี DISPLAY หรือไม่
+            has_display = bool(os.environ.get("DISPLAY") or sys.platform in ("win32", "darwin"))
+            headless = not has_display
+
     if SELENIUM_AVAILABLE:
         try:
             options = SeleniumChromeOptions()
             if headless:
                 options.add_argument("--headless=new")
+                print("ℹ️  รันในโหมด Headless (เบื้องหลัง)")
+            else:
+                print("🌐 กำลังเปิดหน้าต่าง Google Chrome จริงขึ้นมาบนหน้าจอเพื่อทดสอบเว็บไซต์...")
+                options.add_argument("--start-maximized")
+
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument("--disable-gpu")
-            options.add_argument("--window-size=1280,800")
-            driver = webdriver.Chrome(options=options)
-            driver.set_page_load_timeout(15)
-            driver.implicitly_wait(5)
+            options.add_argument("--window-size=1366,768")
+
+            try:
+                from webdriver_manager.chrome import ChromeDriverManager
+                from selenium.webdriver.chrome.service import Service as ChromeService
+                service = ChromeService(ChromeDriverManager().install())
+                driver = webdriver.Chrome(service=service, options=options)
+            except Exception:
+                driver = webdriver.Chrome(options=options)
+
+            driver.set_page_load_timeout(20)
+            driver.implicitly_wait(7)
             return driver
-        except Exception:
-            # Fallback เมื่อไม่มี Chrome Binary ในระบบ
-            pass
+        except Exception as e:
+            if not headless:
+                print(f"⚠️  ไม่สามารถเปิด Chrome GUI บนเครื่องนี้ได้ ({e}) - สลับเป็นโหมด E2E HTTP Live Tester อัตโนมัติ")
 
     return MockWebDriver(APP_URL)
+

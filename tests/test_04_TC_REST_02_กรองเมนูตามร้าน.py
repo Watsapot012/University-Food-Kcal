@@ -25,7 +25,7 @@ def test_selenium_tc_rest_02():
     print("🤖 Selenium Test: TC-REST-02 (หน้าร้านอาหาร - กรองเมนูตามร้านด้วย WebDriver)")
     print("=" * 70)
 
-    driver = get_driver(headless=True)
+    driver = get_driver()
 
     try:
         driver.get(APP_URL)

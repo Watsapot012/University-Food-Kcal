@@ -25,7 +25,7 @@ def test_selenium_tc_auth_01():
     print("🤖 Selenium Test: TC-AUTH-01 (เข้าสู่ระบบ - Login Modal ด้วย WebDriver)")
     print("=" * 70)
 
-    driver = get_driver(headless=True)
+    driver = get_driver()
 
     try:
         driver.get(APP_URL)

@@ -25,7 +25,7 @@ def test_selenium_tc_food_01():
     print("🤖 Selenium Test: TC-FOOD-01 (หน้ารายการอาหาร - ค้นหา 'ต้มยำ' ด้วย WebDriver)")
     print("=" * 70)
 
-    driver = get_driver(headless=True)
+    driver = get_driver()
 
     try:
         driver.get(APP_URL)

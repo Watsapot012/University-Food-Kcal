@@ -26,7 +26,7 @@ def test_selenium_tc_home_02():
     print("=" * 70)
 
     print(f"👉 1. เปิดหน้าแรกที่ URL: {APP_URL}")
-    driver = get_driver(headless=True)
+    driver = get_driver()
 
     try:
         driver.get(APP_URL)

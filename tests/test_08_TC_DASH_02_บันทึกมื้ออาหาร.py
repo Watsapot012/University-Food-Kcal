@@ -25,7 +25,7 @@ def test_selenium_tc_dash_02():
     print("🤖 Selenium Test: TC-DASH-02 (ไดอารี่ - บันทึกมื้ออาหารลงตารางด้วย WebDriver)")
     print("=" * 70)
 
-    driver = get_driver(headless=True)
+    driver = get_driver()
 
     try:
         driver.get(APP_URL)

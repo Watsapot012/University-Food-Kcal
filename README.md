@@ -208,31 +208,32 @@ npm run dev
   ./run_test.sh
   ```
 
-### 2. วิธีรันชุดทดสอบ Selenium WebDriver (10 Test Cases เฉพาะเว็บเรา)
-รันแบบรวมทั้ง 10 เคสต่อเนื่อง:
+### 2. วิธีรันชุดทดสอบ Selenium WebDriver (เปิด Google Chrome จริงบนหน้าจอ)
+รันแบบเปิดเบราว์เซอร์ Google Chrome ให้เห็นหน้าต่างจริงและการทำงานแบบ End-to-End บนเครื่องคอมพิวเตอร์ของคุณ:
+```bash
+# รันเปิด Google Chrome จริงทีละเคส (เช่น TC-HOME-01)
+python tests/test_01_TC_HOME_01_ค้นหาด่วน.py --browser
+
+# หรือรันเปิด Google Chrome จริงครบทั้ง 10 เคสรวดเดียว
+python tests/test_portal_10_cases.py --browser
+```
+
+*(โปรแกรมจะเปิดเบราว์เซอร์ Google Chrome ขึ้นมา นำทางไปยัง URL เว็บไซต์จริง พิมพ์ค้นหาคลิกปุ่ม และตรวจสอบผลลัพธ์ให้เห็นสดๆ บนหน้าจอ)*
+
+หากต้องการรันแบบรวดเร็วใน Terminal (Headless mode):
 ```bash
 python tests/test_portal_10_cases.py
-# หรือ
-python tests/run_tests.py
 # หรือ
 npm run test:suite
 ```
 
-หรือเลือกรันดูโค้ดและทดสอบแยกทีละไฟล์:
-```bash
-python tests/test_01_TC_HOME_01_ค้นหาด่วน.py
-python tests/test_02_TC_HOME_02_ตัวชี้วัดสรุป.py
-python tests/test_03_TC_REST_01_แสดงร้านค้า.py
-python tests/test_04_TC_REST_02_กรองเมนูตามร้าน.py
-python tests/test_05_TC_FOOD_01_ค้นหาเมนูอาหาร.py
-python tests/test_06_TC_FOOD_02_กรองช่วงแคลอรี่.py
-python tests/test_07_TC_CUST_02_ปรับแต่งเพิ่มไข่ดาว.py
-python tests/test_08_TC_DASH_02_บันทึกมื้ออาหาร.py
-python tests/test_09_TC_PROF_01_คำนวณBMR_TDEE.py
-python tests/test_10_TC_AUTH_01_เข้าสู่ระบบ.py
-```
+### 3. รันการทดสอบสดผ่านหน้าเว็บโดยตรง (Live In-Browser E2E Runner)
+คุณสามารถเปิดเว็บไซต์ของเรา แล้วคลิกที่แท็บเมนูด้านบน:
+- **`🧪 ทดสอบระบบ E2E`**
+- จากนั้นกดปุ่ม **`▶ รันครบ 10 เคสบนหน้าเว็บจริง`** หรือกด **`รันข้อนี้`**
+- ระบบจะทำการทดสอบองค์ประกอบจริงบนหน้าจอให้เห็นแบบ Real-time ทันที
 
-### 3. วิธีรันเฉพาะ Node.js / Express API Tests
+### 4. วิธีรันเฉพาะ Node.js / Express API Tests
 ```bash
 npm test
 # หรือรันตรงผ่าน tsx:
